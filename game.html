@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon 16-Bit</title>
+    <style>
+        @font-face {
+            font-family: 'PixelSix';
+            src: url('https://github.com/decentralize-dfw/font/raw/main/pixelsix10.ttf') format('truetype');
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            width: 100%;
+            height: 100%;
+            font-family: 'PixelSix', monospace;
+            background: #000;
+            color: #ccc;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            overflow: hidden;
+        }
+        
+        #gameWrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        #gameContainer {
+            width: 500px; /* Fixed container size */
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            border: 8px solid #555;
+            background: #2a2a2a;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            position: relative;
+            transform: scale(var(--scale, 1));
+            transform-origin: center;
+            overflow: hidden; /* Prevent canvas overflow */
+        }
+        
+        #bootScreen, #transitionScreen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+            z-index: 500;
+        }
+
+        #transitionScreen {
+             z-index: 600; /* On top */
+             background: #000;
+        }
+        
+        #bootScreen.active, #transitionScreen.active {
+            display: flex;
+        }
+        
+        #bootScreen img, #transitionScreen img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        #worldContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none;
+        }
+        
+        #worldContainer.active {
+            display: block;
+        }
+        
+        #mapCanvas {
+            width: 100%;
+            height: calc(100% - 30px);
+            background: #2a2a2a;
+            display: block;
+            image-rendering: pixelated;
+        }
+        
+        #mapFooter {
+            width: 100%;
+            height: 30px;
+            background: #1a1a1a;
+            border-top: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #666;
+            font-family: 'PixelSix', monospace;
+        }
+        
+        #battleContainer {
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            background: #3a3a3a;
+        }
+        
+        #battleContainer.active {
+            display: flex;
+        }
+        
+        .trainerInfo {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #3a3a3a;
+            border: 2px solid #555;
+            padding: 5px 8px;
+            color: #ccc;
+            font-size: 11px;
+            z-index: 50;
+        }
+        
+        #battleField {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertical center */
+            padding: 15px;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 2px solid #555;
+            gap: 10px; /* Space between */
+        }
+        
+        .pokemonSide {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            padding: 10px 0;
+        }
+        
+        /* PLAYER (LEFT) */
+        .pokemonSide.player {
+            align-items: flex-start; /* Align left */
+        }
+        
+        .pokemonSide.player .pokemonDisplay {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-direction: row; /* Img left, bar right */
+        }
+
+        /* ENEMY (RIGHT) */
+        .pokemonSide.enemy {
+            align-items: flex-end; /* Align right */
+        }
+
+        .pokemonSide.enemy .pokemonDisplay {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-direction: row-reverse; /* Bar left, img right */
+        }
+
+        
+        .trainerSprite {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+        }
+        
+        .trainerSprite img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        .pokemonSprite {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2a2a2a;
+        }
+        
+        .pokemonSprite img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        
+        .pokemonStats {
+            background: #555;
+            color: #ccc;
+            padding: 6px 10px;
+            border: 1px solid #777;
+            font-size: 11px;
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .hpBar {
+            width: 100px;
+            height: 8px;
+            background: #000;
+            border: 1px solid #888;
+            margin: 3px 0;
+        }
+        
+        .hpFill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.3s;
+        }
+        
+        #battleUI {
+            background: #2a2a2a;
+            border-top: 2px solid #555;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 0.7;
+            overflow-y: auto;
+            position: relative; /* Added for switch menu */
+        }
+        
+        .battleMessage {
+            background: #3a3a3a;
+            border: 1px solid #555;
+            padding: 8px;
+            color: #ccc;
+            font-size: 11px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .moveGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        
+        .battleBtn {
+            padding: 6px;
+            background: #555;
+            color: #ccc;
+            border: 1px solid #777;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: 'PixelSix', monospace;
+            font-weight: bold;
+        }
+        
+        .battleBtn:hover:not(:disabled) { background: #666; }
+        .battleBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .itemSection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        /* --- SWITCH MENU --- */
+        #switchScreen {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Cover battleUI */
+            background: #2a2a2a;
+            z-index: 100;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            padding: 10px;
+            gap: 8px;
+        }
+        #switchScreen.active {
+            display: flex;
+        }
+        .switchGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            flex: 1;
+        }
+        .switchBtn {
+            background: #444;
+            color: #ccc;
+            border: 1px solid #666;
+            padding: 10px 5px;
+            font-size: 10px;
+            font-family: 'PixelSix', monospace;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .switchBtn:hover:not(:disabled) {
+            background: #555;
+        }
+        .switchBtn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #333;
+            color: #777;
+        }
+        .switchBtn img {
+            width: 40px;
+            height: 40px;
+            image-rendering: pixelated;
+        }
+        /* --- --- */
+        
+        .shake {
+            animation: shake 0.15s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* --- FAINTED ANIMATION --- */
+        .fainted {
+            animation: faintedAnim 1.2s forwards;
+        }
+
+        @keyframes faintedAnim {
+            0% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+            50% { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            100% { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+        }
+        /* --- --- */
+        
+        #victoryScreen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #2a2a2a;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        #victoryScreen.active {
+            display: flex;
+        }
+        
+        .victoryText {
+            font-size: 36px;
+            color: #ccc;
+            font-weight: bold;
+            text-align: center;
+            font-family: 'PixelSix', monospace;
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
+        
+        .cupAnimation {
+             display: none; 
+        }
+        
+        #gameOverImg {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 300;
+            background: #000;
+        }
+        
+        #gameOverImg.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #gameOverImg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameWrapper">
+    <div id="gameContainer">
+        
+        <div id="bootScreen" class="active">
+            <img src="" alt="Boot Screen" id="bootImg" style="width:100%; height:100%;">
+        </div>
+        
+        <div id="transitionScreen">
+            <img src="" alt="Battle Transition" id="transitionImg" style="width:100%; height:100%;">
+        </div>
+        
+        <div id="worldContainer">
+            <canvas id="mapCanvas" width="500" height="470"></canvas>
+            <div id="mapFooter">Developed by Click2Play_Ventures, Kyoto</div>
+        </div>
+        
+        <div id="battleContainer">
+            <div class="trainerInfo">
+                <div id="trainerName">Trainer</div>
+                <div style="margin-top:3px; color:#999;">Pokémon <span id="pokemonIndex">1</span>/3</div>
+            </div>
+            
+            <div id="battleField">
+                
+                <!-- Player (Left Side) -->
+                <div class="pokemonSide player">
+                    <div style="font-size: 10px; color: #ccc; margin-bottom: 5px;">YOUR POKEMON</div>
+                    <div class="pokemonDisplay">
+                        <div>
+                            <div class="pokemonSprite" id="playerSprite"></div>
+                        </div>
+                        <div>
+                            <div class="pokemonStats">
+                                <div id="playerName" style="font-weight: bold; margin-bottom: 3px;">Pokémon</div>
+                                <div class="hpBar">
+                                    <div class="hpFill" id="playerHpBar" style="width: 100%;"></div>
+                                </div>
+                                <div style="font-size: 10px;"><span id="playerHp">100</span>/<span id="playerMaxHp">100</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enemy (Right Side) -->
+                <div class="pokemonSide enemy">
+                    <div style="font-size: 10px; color: #ccc; margin-bottom: 5px;">ENEMY</div>
+                    <div class="pokemonDisplay">
+                        <div>
+                            <div class="pokemonSprite" id="enemySprite"></div>
+                        </div>
+                        <div>
+                            <div class="pokemonStats">
+                                <div id="enemyName" style="font-weight: bold; margin-bottom: 3px;">Enemy</div>
+                                <div class="hpBar">
+                                    <div class="hpFill" id="enemyHpBar" style="width: 100%;"></div>
+                                </div>
+                                <div style="font-size: 10px;"><span id="enemyHp">100</span>/<span id="enemyMaxHp">100</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div id="battleUI">
+                <!-- Main Battle Menu -->
+                <div class="battleMessage" id="message">Battle Start!</div>
+                <div class="moveGrid" id="moveGrid"></div>
+                <div class="itemSection" id="itemSection">
+                    <button class="battleBtn" id="potionBtn">POTION (<span id="potionCount">10</span>)</button>
+                    <button class="battleBtn" id="switchBtn">SWITCH</button>
+                </div>
+
+                <!-- Pokémon Switch Menu (Hidden) -->
+                <div id="switchScreen">
+                    <div class="battleMessage" id="switchMessage">Choose a Pokémon.</div>
+                    <div class="switchGrid" id="switchGrid">
+                        <!-- JS will populate this -->
+                    </div>
+                    <button class="battleBtn" id="cancelSwitchBtn" style="background: #a83232;">CANCEL</button>
+                </div>
+
+            </div>
+        </div>
+        
+        <div id="victoryScreen">
+            <div class="victoryText">VICTORY!</div>
+            <img id="victoryImg" src="" style="width: 150px; height: 150px; object-fit: contain;">
+            <div class="victoryText" style="font-size: 18px;">vs <span id="defeatedTrainer">Trainer</span></div>
+        </div>
+        
+        <div id="gameOverImg"></div>
+    </div>
+</div>
+
+<script>
+    // ===== SETUP SCALING =====
+    function setupScaling() {
+        const gameContainer = document.getElementById('gameContainer');
+        const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        
+        const scaleX = vw / 500;
+        const scaleY = vh / 500;
+        const scale = Math.min(scaleX, scaleY);
+        
+        gameContainer.style.setProperty('--scale', scale);
+    }
+    
+    window.addEventListener('resize', setupScaling);
+    setupScaling();
+    
+    // ===== GAME CONSTANTS & DATA =====
+    
+    const MAP_GRID_SIZE = 60; 
+    
+    // --- ADD_LINKS_HERE: MUSIC ---
+    const audio = {
+        boot: new Audio('MÜZIK_1_AÇILIŞ'),
+        world: new Audio('MÜZIK_2_HARITA'),
+        battle: new Audio('MÜZIK_3_SAVAŞ'),
+        victory: new Audio('MÜZIK_4_VICTORY'),
+        victoryfinal: new Audio('MÜZIK_5_VICTORY_FINAL'),
+        battleIntro: new Audio('MÜZIK_6_SAVAŞ_GİRİŞ') 
+    };
+    // ---
+    
+    audio.boot.loop = false;
+    audio.world.loop = true;
+    audio.battle.loop = true;
+    audio.victory.loop = false;
+    audio.victoryfinal.loop = false;
+    audio.battleIntro.loop = false; 
+    
+    // --- ADD_LINKS_HERE: IMAGES ---
+    const acilisResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg';
+    const arkaPlanResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg';
+    const haritaArkaPlanURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEBACKGROUND5-C2.jpg';
+    const savasArkaPlanURL = 'SAVAŞ_ARKAPLAN_PNG.jpg'; 
+    const savasGirisURL = 'SAVAŞ_GİRİŞ_PNG'; 
+    
+    const normalKupaURL = 'NORMAL_KUPA_PNG'; 
+    const finalKupaURL = 'FINAL_KUPA_PNG'; 
+    const kazandinURL = 'KAZANDIN_PNG';
+    const kaybettinURL = 'KAYBETTİN_PNG';
+
+    const playerCharacterSprite = 'OYUNCU_PNG'; 
+    
+    const trainerSprites = [
+        'TRAINER_1_BROCK_PNG',
+        'TRAINER_2_MISTY_PNG',
+        'TRAINER_3_LT_SURGE_PNG',
+        'TRAINER_4_ERIKA_PNG',
+        'TRAINER_5_BLUE_PNG'
+    ];
+    // ---
+
+    document.getElementById('gameWrapper').style.backgroundImage = `url(${arkaPlanResmiURL})`;
+    document.getElementById('battleField').style.backgroundImage = `url(${savasArkaPlanURL})`;
+
+
+    // POKÉMON TRAINERS
+    const trainersData = [
+        { // 1. Brock (Easy)
+            name: 'Brock',
+            sprite: trainerSprites[0],
+            pokemon: [
+                { name: 'Onix', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/95.png', maxHp: 85, hp: 85, moves: [{name: 'Stone Edge', power: 15}, {name: 'Earthquake', power: 20}, {name: 'Defense', power: 10}, {name: 'Curse', power: 5}] },
+                { name: 'Graveler', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/75.png', maxHp: 80, hp: 80, moves: [{name: 'Rock Slide', power: 15}, {name: 'Earthquake', power: 20}, {name: 'Bulldoze', power: 10}, {name: 'Roll Out', power: 12}] },
+                { name: 'Golem', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/76.png', maxHp: 90, hp: 90, moves: [{name: 'Stone Edge', power: 18}, {name: 'Earthquake', power: 22}, {name: 'Explosion', power: 25}, {name: 'Hammer Arm', power: 18}] }
+            ]
+        },
+        { // 2. Misty
+            name: 'Misty',
+            sprite: trainerSprites[1],
+            pokemon: [
+                { name: 'Staryu', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/120.png', maxHp: 80, hp: 80, moves: [{name: 'Hydro Pump', power: 22}, {name: 'Power Gem', power: 18}, {name: 'Rapid Spin', power: 10}, {name: 'Recover', power: 15}] },
+                { name: 'Goldeen', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/118.png', maxHp: 85, hp: 85, moves: [{name: 'Waterfall', power: 20}, {name: 'Megahorn', power: 22}, {name: 'Horn Drill', power: 25}, {name: 'Peck', power: 8}] },
+                { name: 'Lapras', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png', maxHp: 110, hp: 110, moves: [{name: 'Hydro Pump', power: 25}, {name: 'Ice Beam', power: 20}, {name: 'Dragon Pulse', power: 22}, {name: 'Thunderbolt', power: 18}] }
+            ]
+        },
+        { // 3. Lt. Surge
+            name: 'Lt. Surge',
+            sprite: trainerSprites[2],
+            pokemon: [
+                { name: 'Voltorb', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/100.png', maxHp: 75, hp: 75, moves: [{name: 'Thunderbolt', power: 25}, {name: 'Thunder', power: 30}, {name: 'Explosion', power: 35}, {name: 'Charge Beam', power: 15}] },
+                { name: 'Electrode', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/101.png', maxHp: 85, hp: 85, moves: [{name: 'Thunder', power: 30}, {name: 'Wild Charge', power: 22}, {name: 'Signal Beam', power: 18}, {name: 'Discharge', power: 25}] },
+                { name: 'Raichu', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/26.png', maxHp: 95, hp: 95, moves: [{name: 'Thunderbolt', power: 28}, {name: 'Thunder', power: 32}, {name: 'Quick Attack', power: 15}, {name: 'Wild Charge', power: 25}] }
+            ]
+        },
+        { // 4. Erika
+            name: 'Erika',
+            sprite: trainerSprites[3],
+            pokemon: [
+                { name: 'Oddish', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/69.png', maxHp: 80, hp: 80, moves: [{name: 'Solar Beam', power: 26}, {name: 'Sludge Bomb', power: 24}, {name: 'Sleep Powder', power: 12}, {name: 'Acid', power: 12}] },
+                { name: 'Gloom', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/70.png', maxHp: 90, hp: 90, moves: [{name: 'Solar Beam', power: 28}, {name: 'Sludge Bomb', power: 26}, {name: 'Toxic Spikes', power: 18}, {name: 'Stun Spore', power: 16}] },
+                { name: 'Vileplume', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/45.png', maxHp: 100, hp: 100, moves: [{name: 'Solar Beam', power: 30}, {name: 'Sludge Bomb', power: 28}, {name: 'Sleep Powder', power: 12}, {name: 'Toxic', power: 24}] }
+            ]
+        },
+        { // 5. Champion Blue (Hard)
+            name: 'Champion Blue',
+            sprite: trainerSprites[4],
+            pokemon: [
+                { name: 'Alakazam', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/65.png', maxHp: 100, hp: 100, moves: [{name: 'Psychic', power: 35}, {name: 'Focus Blast', power: 32}, {name: 'Dazzling Gleam', power: 28}, {name: 'Shadow Ball', power: 25}] },
+                { name: 'Gengar', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png', maxHp: 95, hp: 95, moves: [{name: 'Shadow Ball', power: 30}, {name: 'Focus Blast', power: 32}, {name: 'Sludge Bomb', power: 30}, {name: 'Psychic', power: 32}] },
+                { name: 'Arcanine', imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/59.png', maxHp: 110, hp: 110, moves: [{name: 'Flare Blitz', power: 38}, {name: 'Wild Charge', power: 28}, {name: 'Crunch', power: 28}, {name: 'Close Combat', power: 32}] }
+            ]
+        }
+    ];
+    
+    // Player Pokémon
+    const playerTeam = [
+        { name: 'Charizard', maxHp: 120, hp: 120, moves: [{name: 'Flamethrower', power: 400}, {name: 'Dragon Claw', power: 35}, {name: 'Fly', power: 30}, {name: 'Overheat', power: 45}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png' },
+        { name: 'Blastoise', maxHp: 120, hp: 120, moves: [{name: 'Hydro Pump', power: 42}, {name: 'Ice Beam', power: 32}, {name: 'Surf', power: 38}, {name: 'Blizzard', power: 40}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png' },
+        { name: 'Venusaur', maxHp: 115, hp: 115, moves: [{name: 'Solar Beam', power: 40}, {name: 'Sludge Bomb', power: 35}, {name: 'Leech Seed', power: 20}, {name: 'Synthesis', power: 25}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png' }
+    ];
+    
+    // NEW MAP (3-4 INNER PATH)
+    const labyrinthPath = [
+        // Start Area (to 1st Trainer)
+        {x: 10, y: 85}, {x: 11, y: 85}, {x: 12, y: 85}, {x: 13, y: 85}, {x: 14, y: 85}, {x: 15, y: 85},
+        {x: 15, y: 84}, {x: 15, y: 83}, {x: 15, y: 82}, {x: 15, y: 81}, {x: 15, y: 80}, // 1st Trainer (15, 80)
+        
+        // 1 to 2
+        {x: 16, y: 80}, {x: 17, y: 80}, {x: 18, y: 80}, {x: 19, y: 80}, {x: 20, y: 80},
+        {x: 20, y: 79}, {x: 20, y: 78}, {x: 20, y: 77}, {x: 20, y: 76}, {x: 20, y: 75},
+        {x: 19, y: 75}, {x: 18, y: 75}, {x: 17, y: 75}, {x: 16, y: 75}, {x: 15, y: 75}, {x: 14, y: 75}, {x: 13, y: 75},
+        {x: 13, y: 74}, {x: 13, y: 73}, {x: 13, y: 72}, {x: 13, y: 71}, {x: 13, y: 70}, {x: 13, y: 69}, {x: 13, y: 68}, {x: 13, y: 67}, {x: 13, y: 66}, {x: 13, y: 65}, // 2nd Trainer (13, 65)
+
+        // 2 to 3
+        {x: 14, y: 65}, {x: 15, y: 65}, {x: 16, y: 65}, {x: 17, y: 65}, {x: 18, y: 65}, {x: 19, y: 65}, {x: 20, y: 65}, {x: 21, y: 65}, {x: 22, y: 65}, {x: 23, y: 65}, {x: 24, y: 65}, {x: 25, y: 65},
+        {x: 25, y: 64}, {x: 25, y: 63}, {x: 25, y: 62}, {x: 25, y: 61}, {x: 25, y: 60}, {x: 25, y: 59}, {x: 25, y: 58},
+        {x: 26, y: 58}, {x: 27, y: 58}, {x: 28, y: 58}, {x: 29, y: 58}, {x: 30, y: 58},
+        {x: 30, y: 57}, {x: 30, y: 56}, {x: 30, y: 55}, {x: 30, y: 54}, {x: 30, y: 53}, {x: 30, y: 52}, {x: 30, y: 51}, {x: 30, y: 50}, // 3rd Trainer (30, 50)
+
+        // 3 to 4 (NEW INNER PATH)
+        {x: 31, y: 50}, {x: 32, y: 50}, {x: 33, y: 50}, {x: 34, y: 50}, // Right
+        {x: 34, y: 49}, {x: 34, y: 48}, {x: 34, y: 47}, // Up
+        {x: 33, y: 47}, {x: 32, y: 47}, {x: 31, y: 47}, {x: 30, y: 47}, // Go Left (More inner)
+        {x: 30, y: 46}, {x: 30, y: 45}, {x: 30, y: 44}, {x: 30, y: 43}, {x: 30, y: 42}, {x: 30, y: 41}, {x: 30, y: 40}, // Go Up
+        {x: 31, y: 40}, {x: 32, y: 40}, {x: 33, y: 40}, {x: 34, y: 40}, // Go Right
+        {x: 34, y: 39}, {x: 34, y: 38}, {x: 34, y: 37}, {x: 34, y: 36}, {x: 34, y: 35}, // Go Up to 4th Trainer (34, 35)
+        
+        // 4 to 5
+        {x: 33, y: 35}, {x: 32, y: 35}, {x: 31, y: 35}, {x: 30, y: 35}, {x: 29, y: 35}, {x: 28, y: 35},
+        {x: 28, y: 34}, {x: 28, y: 33}, {x: 28, y: 32}, {x: 28, y: 31}, {x: 28, y: 30},
+        {x: 27, y: 30}, {x: 26, y: 30}, {x: 25, y: 30}, {x: 24, y: 30}, {x: 23, y: 30},
+        {x: 23, y: 29}, {x: 23, y: 28}, {x: 23, y: 27}, {x: 23, y: 26}, {x: 23, y: 25}, {x: 23, y: 24}, {x: 23, y: 23}, {x: 23, y: 22}, {x: 23, y: 21}, {x: 23, y: 20}, // 5th Trainer (23, 20)
+        
+        // Cup
+        {x: 23, y: 19}, {x: 23, y: 18}, {x: 23, y: 17}, {x: 23, y: 16}, {x: 23, y: 15}
+    ];
+    
+    // NEW TRAINER POSITIONS
+    const trainerPositions = [
+        { x: 15, y: 80 }, // 1. Brock
+        { x: 13, y: 65 }, // 2. Misty
+        { x: 30, y: 50 }, // 3. Lt. Surge
+        { x: 34, y: 35 }, // 4. Erika
+        { x: 23, y: 20 }  // 5. Blue
+    ];
+
+    // Load image assets
+    const mapBgImage = new Image();
+    mapBgImage.src = haritaArkaPlanURL;
+    
+    const playerImage = new Image();
+    playerImage.src = playerCharacterSprite;
+
+    const trainerImages = trainerSprites.map(src => {
+        const img = new Image();
+        img.src = src;
+        return img;
+    });
+
+    
+    let gameState = {
+        scene: 'boot',
+        playerX: 10, // NEW START X
+        playerY: 85, // NEW START Y (FIXED)
+        cameraX: 0, 
+        cameraY: 0, 
+        playerTeam: JSON.parse(JSON.stringify(playerTeam)),
+        currentTeamIndex: 0,
+        potions: 10,
+        trainerIndex: 0,
+        currentPokemonIndex: 0,
+        currentBattle: null,
+        isPlayerTurn: true,
+        trainersDefeated: 0
+    };
+    
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // ===== DOM Elements =====
+    const switchScreen = document.getElementById('switchScreen');
+    const switchGrid = document.getElementById('switchGrid');
+    const cancelSwitchBtn = document.getElementById('cancelSwitchBtn');
+    const moveGridEl = document.getElementById('moveGrid');
+    const itemSectionEl = document.getElementById('itemSection');
+    const switchBtnEl = document.getElementById('switchBtn');
+    
+    // ===== BOOT SCREEN =====
+    function showBootScreen() {
+        document.getElementById('bootImg').src = acilisResmiURL;
+        const bootScreen = document.getElementById('bootScreen');
+        bootScreen.classList.add('active');
+        
+        try {
+            audio.boot.play().catch(e => console.log("Waiting for interaction to play music."));
+        } catch(e) {
+            console.log("Could not play music.", e);
+        }
+        
+        setTimeout(() => {
+            bootScreen.classList.remove('active');
+            showWorldMap();
+        }, 5000); // 5 seconds
+    }
+    
+    function showWorldMap() {
+        gameState.scene = 'world';
+        document.getElementById('worldContainer').classList.add('active');
+        document.getElementById('battleContainer').classList.remove('active');
+        document.getElementById('victoryScreen').classList.remove('active');
+        
+        audio.boot.pause();
+        audio.boot.currentTime = 0;
+        audio.victory.pause();
+        audio.victory.currentTime = 0;
+        
+        try {
+            audio.world.play().catch(e => console.log("Waiting for interaction to play world music."));
+        } catch(e) {
+            console.log("Could not play world music.", e);
+        }
+        
+        // When returning to map, move player to the defeated trainer's position
+        if (gameState.trainersDefeated > 0) {
+            const pos = trainerPositions[gameState.trainersDefeated - 1];
+            gameState.playerX = pos.x;
+            gameState.playerY = pos.y;
+        }
+
+        drawWorld();
+    }
+    
+    // Movement check
+    function canMoveTo(x, y) {
+        return labyrinthPath.some(pos => pos.x === x && pos.y === y);
+    }
+    
+    // SCROLLING MAP (CAMERA SYSTEM)
+    function drawWorld() {
+        if (!ctx) return;
+        
+        // Center camera on player
+        gameState.cameraX = (gameState.playerX * MAP_GRID_SIZE + MAP_GRID_SIZE / 2) - canvas.width / 2;
+        gameState.cameraY = (gameState.playerY * MAP_GRID_SIZE + MAP_GRID_SIZE / 2) - canvas.height / 2;
+
+        // Clear background
+        ctx.fillStyle = '#2a2a2a'; // <-- DÜZELTME: Koyu gri arka plan
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw Map Background PNG
+        if (mapBgImage && mapBgImage.complete && mapBgImage.naturalWidth > 0) {
+            ctx.drawImage(mapBgImage, -gameState.cameraX, -gameState.cameraY, mapBgImage.width, mapBgImage.height);
+        }
+
+        // Draw Labyrinth Path
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.0)'; // DÜZELTME: Tamamen şeffaf yol
+        for (let pos of labyrinthPath) {
+            ctx.fillRect(
+                pos.x * MAP_GRID_SIZE - gameState.cameraX, 
+                pos.y * MAP_GRID_SIZE - gameState.cameraY, 
+                MAP_GRID_SIZE, 
+                MAP_GRID_SIZE
+            );
+        }
+        
+        // Draw Trainers
+        trainerPositions.forEach((pos, i) => {
+            if (i < gameState.trainersDefeated) return; // Don't draw if defeated
+
+            const img = trainerImages[i];
+            const drawX = pos.x * MAP_GRID_SIZE - gameState.cameraX;
+            const drawY = pos.y * MAP_GRID_SIZE - gameState.cameraY;
+
+            // Only draw if on screen
+            if (drawX > -MAP_GRID_SIZE && drawX < canvas.width && drawY > -MAP_GRID_SIZE && drawY < canvas.height) {
+                if (img && img.complete && img.naturalWidth > 0) {
+                    ctx.drawImage(img, drawX, drawY, MAP_GRID_SIZE, MAP_GRID_SIZE); 
+                } else {
+                    // Standard box if image not loaded
+                    ctx.fillStyle = '#ff6b6b';
+                    ctx.fillRect(drawX, drawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(String(i + 1), drawX + MAP_GRID_SIZE / 2, drawY + MAP_GRID_SIZE / 2);
+                }
+            }
+        });
+        
+        // Draw Player (Always in the center of the screen)
+        const playerDrawX = (canvas.width / 2) - (MAP_GRID_SIZE / 2);
+        const playerDrawY = (canvas.height / 2) - (MAP_GRID_SIZE / 2);
+
+        if (playerImage && playerImage.complete && playerImage.naturalWidth > 0) {
+            ctx.drawImage(playerImage, playerDrawX, playerDrawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+        } else {
+            // Standard box if image not loaded
+            ctx.fillStyle = '#6b9eff';
+            ctx.fillRect(playerDrawX, playerDrawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+        }
+    }
+    
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+        if (gameState.scene !== 'world') return;
+        
+        let newX = gameState.playerX;
+        let newY = gameState.playerY;
+        
+        if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') newY--;
+        if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') newY++;
+        if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') newX--;
+        if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') newX++;
+        
+        if (canMoveTo(newX, newY)) {
+            gameState.playerX = newX;
+            gameState.playerY = newY;
+            checkTrainerCollision();
+            drawWorld(); 
+        }
+    });
+    
+    // Collision check
+    function checkTrainerCollision() {
+        const i = gameState.trainersDefeated;
+        if (i >= trainersData.length) return; 
+
+        const pos = trainerPositions[i];
+        
+        const dx = Math.abs(gameState.playerX - pos.x);
+        const dy = Math.abs(gameState.playerY - pos.y);
+        const collisionDistance = 2; 
+
+        if (dx <= collisionDistance && dy <= collisionDistance) {
+            startBattle(i);
+        }
+    }
+    
+    // BATTLE TRANSITION SCREEN
+    function startBattle(trainerIdx) {
+        if (gameState.scene === 'battle' || gameState.scene === 'transition') return; 
+
+        gameState.scene = 'transition';
+        
+        audio.world.pause();
+        audio.world.currentTime = 0;
+        try {
+            audio.battleIntro.play().catch(e => console.log("Could not play battle intro music."));
+        } catch(e) {}
+
+        const transitionScreen = document.getElementById('transitionScreen');
+        document.getElementById('transitionImg').src = savasGirisURL;
+        transitionScreen.classList.add('active');
+
+        // Start the actual battle after 3 seconds
+        setTimeout(() => {
+            transitionScreen.classList.remove('active');
+            audio.battleIntro.pause();
+            audio.battleIntro.currentTime = 0;
+
+            try {
+                audio.battle.play().catch(e => console.log("Waiting for interaction to play battle music."));
+            } catch(e) {}
+            
+            gameState.scene = 'battle';
+            gameState.trainerIndex = trainerIdx;
+            gameState.currentPokemonIndex = 0; 
+            gameState.isPlayerTurn = true; // BUG FIX
+            
+            let firstHealthyPokemon = -1;
+            for(let i=0; i < gameState.playerTeam.length; i++) {
+                if(gameState.playerTeam[i].hp > 0) {
+                    firstHealthyPokemon = i;
+                    break;
+                }
+            }
+
+            if(firstHealthyPokemon === -1) {
+                endGame(false);
+                return;
+            }
+            gameState.currentTeamIndex = firstHealthyPokemon;
+
+            gameState.currentBattle = JSON.parse(JSON.stringify(trainersData[trainerIdx]));
+            
+            document.getElementById('worldContainer').classList.remove('active');
+            document.getElementById('battleContainer').classList.add('active');
+            document.getElementById('trainerName').textContent = gameState.currentBattle.name;
+            
+            updateBattle();
+            document.getElementById('message').textContent = `${gameState.currentBattle.name} challenges you!`;
+
+        }, 3000); // 3 second transition
+    }
+    
+    // Update battle screen
+    function updateBattle() {
+        const playerPoke = gameState.playerTeam[gameState.currentTeamIndex];
+        const enemyPoke = gameState.currentBattle.pokemon[gameState.currentPokemonIndex];
+        
+        document.getElementById('playerName').textContent = playerPoke.name;
+        document.getElementById('playerHp').textContent = playerPoke.hp;
+        document.getElementById('playerMaxHp').textContent = playerPoke.maxHp;
+        document.getElementById('playerHpBar').style.width = (playerPoke.hp / playerPoke.maxHp) * 100 + '%';
+        const playerSpriteEl = document.getElementById('playerSprite'); // Get element
+        playerSpriteEl.innerHTML = `<img src="${playerPoke.imageUrl}" alt="${playerPoke.name}">`;
+        playerSpriteEl.classList.remove('fainted'); // DÜZELTME: Animasyonu temizle
+
+        
+        document.getElementById('enemyName').textContent = enemyPoke.name;
+        document.getElementById('enemyHp').textContent = enemyPoke.hp;
+        document.getElementById('enemyMaxHp').textContent = enemyPoke.maxHp;
+        document.getElementById('enemyHpBar').style.width = (enemyPoke.hp / enemyPoke.maxHp) * 100 + '%';
+        const enemySpriteEl = document.getElementById('enemySprite'); // Get element
+        enemySpriteEl.innerHTML = `<img src="${enemyPoke.imageUrl}" alt="${enemyPoke.name}">`;
+        enemySpriteEl.classList.remove('fainted'); // DÜZELTME: Animasyonu temizle
+        
+        document.getElementById('pokemonIndex').textContent = `${gameState.currentPokemonIndex + 1}/${gameState.currentBattle.pokemon.length}`;
+        
+        const moveGrid = moveGridEl;
+        moveGrid.innerHTML = '';
+        playerPoke.moves.forEach((move, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'battleBtn';
+            btn.textContent = move.name;
+            btn.disabled = !gameState.isPlayerTurn;
+            btn.onclick = () => playerAttack(i);
+            moveGrid.appendChild(btn);
+        });
+        
+        document.getElementById('potionBtn').disabled = gameState.potions === 0 || !gameState.isPlayerTurn || playerPoke.hp === playerPoke.maxHp;
+        
+        let canSwitch = false;
+        for(let i=0; i < gameState.playerTeam.length; i++) {
+            if(i !== gameState.currentTeamIndex && gameState.playerTeam[i].hp > 0) {
+                canSwitch = true;
+                break;
+            }
+        }
+        switchBtnEl.disabled = !gameState.isPlayerTurn || !canSwitch;
+        document.getElementById('potionCount').textContent = gameState.potions;
+
+        // Hide switch menu
+        cancelSwitch();
+    }
+    
+    // Player attack
+    function playerAttack(moveIdx) {
+        if (!gameState.isPlayerTurn) return;
+        
+        gameState.isPlayerTurn = false;
+        disableButtons();
+        
+        const playerPoke = gameState.playerTeam[gameState.currentTeamIndex];
+        const enemyPoke = gameState.currentBattle.pokemon[gameState.currentPokemonIndex];
+        const move = playerPoke.moves[moveIdx];
+        
+        const damage = Math.floor(Math.random() * 10 + move.power * 1.5); 
+        enemyPoke.hp = Math.max(0, enemyPoke.hp - damage);
+        
+        document.getElementById('playerSprite').parentElement.classList.add('shake');
+        setTimeout(() => document.getElementById('playerSprite').parentElement.classList.remove('shake'), 150);
+        
+        document.getElementById('message').textContent = `${playerPoke.name} used ${move.name}! ${damage} DMG!`;
+        updateBattleHealth();
+        
+        setTimeout(() => {
+            if (enemyPoke.hp <= 0) {
+                defeatPokemon();
+            } else {
+                setTimeout(enemyAttack, 1000); 
+            }
+        }, 1200);
+    }
+    
+    // Enemy attack
+    function enemyAttack() {
+        const playerPoke = gameState.playerTeam[gameState.currentTeamIndex];
+        const enemyPoke = gameState.currentBattle.pokemon[gameState.currentPokemonIndex];
+        const move = enemyPoke.moves[Math.floor(Math.random() * enemyPoke.moves.length)];
+        
+        const damage = Math.floor(Math.random() * 10 + move.power * 1.5);
+        playerPoke.hp = Math.max(0, playerPoke.hp - damage);
+        
+        document.getElementById('enemySprite').parentElement.classList.add('shake');
+        setTimeout(() => document.getElementById('enemySprite').parentElement.classList.remove('shake'), 150);
+        
+        document.getElementById('message').textContent = `Enemy ${enemyPoke.name} used ${move.name}! ${damage} DMG!`;
+        updateBattleHealth();
+        
+        setTimeout(() => {
+            if (playerPoke.hp <= 0) {
+                defeatPlayerPokemon();
+            } else {
+                gameState.isPlayerTurn = true;
+                updateBattle();
+            }
+        }, 1200);
+    }
+    
+    // Update only health bars
+    function updateBattleHealth() {
+        const playerPoke = gameState.playerTeam[gameState.currentTeamIndex];
+        const enemyPoke = gameState.currentBattle.pokemon[gameState.currentPokemonIndex];
+
+        document.getElementById('playerHp').textContent = playerPoke.hp;
+        document.getElementById('playerHpBar').style.width = (playerPoke.hp / playerPoke.maxHp) * 100 + '%';
+        
+        document.getElementById('enemyHp').textContent = enemyPoke.hp;
+        document.getElementById('enemyHpBar').style.width = (enemyPoke.hp / enemyPoke.maxHp) * 100 + '%';
+    }
+
+    // Temporarily disable buttons
+    function disableButtons() {
+        document.querySelectorAll('.battleBtn').forEach(btn => btn.disabled = true);
+    }
+
+    // Enemy pokemon fainted
+    function defeatPokemon() {
+        document.getElementById('message').textContent = `Enemy ${gameState.currentBattle.pokemon[gameState.currentPokemonIndex].name} Fainted!`;
+        
+        document.getElementById('enemySprite').classList.add('fainted'); // DÜZELTME: Animasyonu ekle
+
+        setTimeout(() => {
+            gameState.currentPokemonIndex++;
+            if (gameState.currentPokemonIndex >= gameState.currentBattle.pokemon.length) {
+                // Trainer defeated
+                trainerDefeated();
+            } else {
+                // Next pokemon
+                document.getElementById('message').textContent = `${gameState.currentBattle.name} sent out ${gameState.currentBattle.pokemon[gameState.currentPokemonIndex].name}!`;
+                gameState.isPlayerTurn = true;
+                updateBattle();
+            }
+        }, 1500);
+    }
+    
+    // Player pokemon fainted
+    function defeatPlayerPokemon() {
+        document.getElementById('message').textContent = `${gameState.playerTeam[gameState.currentTeamIndex].name} Fainted!`;
+        
+        document.getElementById('playerSprite').classList.add('fainted'); // DÜZELTME: Animasyonu ekle
+
+        let nextHealthyPokemon = -1;
+        for (let i = 0; i < gameState.playerTeam.length; i++) {
+            if (gameState.playerTeam[i].hp > 0) {
+                nextHealthyPokemon = i;
+                break;
+            }
+        }
+        
+        setTimeout(() => {
+            if (nextHealthyPokemon !== -1) {
+                // Force switch
+                document.getElementById('message').textContent = `Go, ${gameState.playerTeam[nextHealthyPokemon].name}!`;
+                executeSwitch(nextHealthyPokemon, true); // true = forced switch (no enemy attack)
+            } else {
+                endGame(false); // You lost
+            }
+        }, 1500);
+    }
+    
+    // Trainer defeated
+    function trainerDefeated() {
+        audio.battle.pause();
+        audio.battle.currentTime = 0;
+        
+        gameState.trainersDefeated++;
+        
+        // Post-battle heal
+        for (let poke of gameState.playerTeam) {
+            poke.hp = poke.maxHp;
+        }
+
+        const victoryScreen = document.getElementById('victoryScreen');
+
+        // Is it the final trainer?
+        if (gameState.trainersDefeated >= trainersData.length) {
+            // CHAMPION!
+            try {
+                audio.victoryfinal.play().catch(e => {});
+            } catch(e) {}
+            
+            document.getElementById('battleContainer').classList.remove('active');
+            victoryScreen.classList.add('active');
+            
+            victoryScreen.innerHTML = `
+                <div class="victoryText">CHAMPION!</div>
+                <img id="finalCup" src="${finalKupaURL}" style="width: 150px; height: 150px; object-fit: contain;">
+                <div class="victoryText" style="font-size: 16px;">TOURNAMENT WON!</div>
+            `;
+    
+            setTimeout(() => {
+                endGame(true); // You won (Game Over)
+            }, 5000);
+
+        } else {
+            // NORMAL TRAINER DEFEATED
+            try {
+                audio.victory.play().catch(e => {});
+            } catch(e) {}
+
+            document.getElementById('battleContainer').classList.remove('active');
+            victoryScreen.classList.add('active');
+            
+            // Reset victory screen content (to avoid showing the previous trainer)
+            victoryScreen.innerHTML = `
+                <div class="victoryText">VICTORY!</div>
+                <img id="victoryImg" src="${normalKupaURL}" style="width: 150px; height: 150px; object-fit: contain;">
+                <div class="victoryText" style="font-size: 18px;">vs ${gameState.currentBattle.name}</div>
+            `;
+
+            setTimeout(() => {
+                showWorldMap(); // Return to map
+            }, 5000); // 5 second wait
+        }
+    }
+    
+    // Use Potion
+    function usePotion() {
+        if (gameState.potions > 0 && gameState.isPlayerTurn) {
+            const playerPoke = gameState.playerTeam[gameState.currentTeamIndex];
+            if(playerPoke.hp === playerPoke.maxHp) return; 
+
+            gameState.potions--;
+            playerPoke.hp = playerPoke.maxHp;
+            
+            document.getElementById('message').textContent = `Used Potion! ${playerPoke.name} healed completely!`;
+            document.getElementById('potionCount').textContent = gameState.potions;
+            
+            gameState.isPlayerTurn = false;
+            disableButtons();
+            updateBattle();
+            
+            setTimeout(enemyAttack, 1500);
+        }
+    }
+    document.getElementById('potionBtn').onclick = () => usePotion();
+    
+
+    // --- NEW SWITCH LOGIC ---
+
+    // Show switch menu
+    function showSwitchPokemonMenu() {
+        if (!gameState.isPlayerTurn) return;
+
+        moveGridEl.style.display = 'none';
+        itemSectionEl.style.display = 'none';
+        switchScreen.classList.add('active');
+
+        switchGrid.innerHTML = '';
+        gameState.playerTeam.forEach((poke, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'switchBtn';
+            btn.innerHTML = `
+                <img src="${poke.imageUrl}" alt="${poke.name}">
+                <div>${poke.name}</div>
+                <div>${poke.hp} / ${poke.maxHp} HP</div>
+            `;
+            
+            if (poke.hp <= 0) {
+                btn.disabled = true;
+                btn.innerHTML += "<span>FAINTED</span>";
+            }
+            if (index === gameState.currentTeamIndex) {
+                btn.disabled = true;
+                btn.innerHTML += "<span>ACTIVE</span>";
+            }
+            
+            btn.onclick = () => executeSwitch(index);
+            switchGrid.appendChild(btn);
+        });
+    }
+    
+    // Hide switch menu
+    function cancelSwitch() {
+        moveGridEl.style.display = 'grid';
+        itemSectionEl.style.display = 'grid';
+        switchScreen.classList.remove('active');
+    }
+
+    // Perform the actual switch
+    function executeSwitch(newIndex, isForcedSwitch = false) {
+        if (newIndex === gameState.currentTeamIndex) return;
+        
+        gameState.currentTeamIndex = newIndex;
+        document.getElementById('message').textContent = `Go, ${gameState.playerTeam[newIndex].name}!`;
+        
+        gameState.isPlayerTurn = false;
+        disableButtons();
+        updateBattle();
+        
+        // If it's a forced switch (player fainted), don't trigger enemy attack
+        if (isForcedSwitch) {
+             setTimeout(() => {
+                gameState.isPlayerTurn = true;
+                updateBattle();
+             }, 1000);
+        } else {
+            // Normal switch, trigger enemy attack
+            setTimeout(enemyAttack, 1500);
+        }
+    }
+
+    switchBtnEl.onclick = () => showSwitchPokemonMenu();
+    cancelSwitchBtn.onclick = () => cancelSwitch();
+    
+    // --- ---
+
+    
+    // End game
+    function endGame(won) {
+        for (let key in audio) {
+            audio[key].pause();
+            audio[key].currentTime = 0;
+        }
+
+        document.getElementById('bootScreen').classList.remove('active');
+        document.getElementById('worldContainer').classList.remove('active');
+        document.getElementById('battleContainer').classList.remove('active');
+        document.getElementById('victoryScreen').classList.remove('active');
+        document.getElementById('transitionScreen').classList.remove('active');
+
+        const gameOverEl = document.getElementById('gameOverImg');
+        gameOverEl.classList.add('active');
+
+        if (won) {
+            gameOverEl.innerHTML = `<img src="${kazandinURL}" alt="Champion!" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            gameOverEl.innerHTML = `<img src="${kaybettinURL}" alt="Game Over" style="width:100%; height:100%; object-fit:cover;">`;
+        }
+    }
+    
+    // ===== INIT =====
+    // Small delay for preloading images
+    window.onload = function() {
+        // Add images to DOM (to prevent errors)
+        document.getElementById('bootImg').src = acilisResmiURL;
+        document.getElementById('transitionImg').src = savasGirisURL;
+        document.getElementById('victoryImg').src = normalKupaURL; // Default
+
+        // Start the game
+        showBootScreen();
+    }
+
+</script>
+
+</body>
+</html>
