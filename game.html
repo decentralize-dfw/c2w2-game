@@ -573,7 +573,7 @@
     const kazandinURL = 'KAZANDIN_PNG';
     const kaybettinURL = 'KAYBETTİN_PNG';
 
-    const playerCharacterSprite = 'OYUNCU_PNG'; 
+    const playerCharacterSprite = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/dalgaman.png'; 
     
     const trainerSprites = [
         'TRAINER_1_BROCK_PNG',
@@ -813,17 +813,20 @@
             if (i < gameState.trainersDefeated) return; // Don't draw if defeated
 
             const img = trainerImages[i];
-            const drawX = pos.x * MAP_GRID_SIZE - gameState.cameraX;
-            const drawY = pos.y * MAP_GRID_SIZE - gameState.cameraY;
+            const trainerWidth = MAP_GRID_SIZE;
+            const trainerHeight = MAP_GRID_SIZE * 2; // UPDATED: 2x taller
 
-            // Only draw if on screen
-            if (drawX > -MAP_GRID_SIZE && drawX < canvas.width && drawY > -MAP_GRID_SIZE && drawY < canvas.height) {
+            const drawX = pos.x * MAP_GRID_SIZE - gameState.cameraX;
+            const drawY = pos.y * MAP_GRID_SIZE - gameState.cameraY; // Starts at grid Y and goes down
+
+            // Only draw if on screen (adjusted for new height)
+            if (drawX > -trainerWidth && drawX < canvas.width && drawY > -trainerHeight && drawY < canvas.height) {
                 if (img && img.complete && img.naturalWidth > 0) {
-                    ctx.drawImage(img, drawX, drawY, MAP_GRID_SIZE, MAP_GRID_SIZE); 
+                    ctx.drawImage(img, drawX, drawY, trainerWidth, trainerHeight); // UPDATED
                 } else {
                     // Standard box if image not loaded
                     ctx.fillStyle = '#ff6b6b';
-                    ctx.fillRect(drawX, drawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+                    ctx.fillRect(drawX, drawY, trainerWidth, trainerHeight); // UPDATED
                     ctx.fillStyle = '#fff';
                     ctx.font = 'bold 10px monospace';
                     ctx.textAlign = 'center';
@@ -834,15 +837,19 @@
         });
         
         // Draw Player (Always in the center of the screen)
-        const playerDrawX = (canvas.width / 2) - (MAP_GRID_SIZE / 2);
-        const playerDrawY = (canvas.height / 2) - (MAP_GRID_SIZE / 2);
+        const playerHeight = MAP_GRID_SIZE * 2; // UPDATED: 2x taller (bir küp daha)
+        const playerWidth = MAP_GRID_SIZE;
+        
+        const playerDrawX = (canvas.width / 2) - (playerWidth / 2); // Horizontally centered
+        // UPDATED: Vertically "grounded" to the bottom of the center grid square
+        const playerDrawY = (canvas.height / 2) + (MAP_GRID_SIZE / 2) - playerHeight; 
 
         if (playerImage && playerImage.complete && playerImage.naturalWidth > 0) {
-            ctx.drawImage(playerImage, playerDrawX, playerDrawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+            ctx.drawImage(playerImage, playerDrawX, playerDrawY, playerWidth, playerHeight);
         } else {
             // Standard box if image not loaded
             ctx.fillStyle = '#6b9eff';
-            ctx.fillRect(playerDrawX, playerDrawY, MAP_GRID_SIZE, MAP_GRID_SIZE);
+            ctx.fillRect(playerDrawX, playerDrawY, playerWidth, playerHeight);
         }
     }
     
