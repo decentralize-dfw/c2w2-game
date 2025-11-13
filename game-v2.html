@@ -696,26 +696,36 @@
     // --- LINKS/ASSETS ---
     // --- LINKS/ASSETS ---
     const audio = {
-        boot: new Audio('MÜZIK_1_AÇILIŞ'),
-        world: new Audio('MÜZIK_2_HARITA'),
-        battle: new Audio('MÜZIK_3_SAVAŞ'),
-        victory: new Audio('MÜZIK_4_VICTORY'), 
+        boot: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3'),
+        world: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/gamein.mp3'),
+        // battle: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle3.mp3'),
+        victory: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/victory.mp3'), 
         victoryfinal: new Audio('MÜZIK_5_VICTORY_FINAL'), 
-        battleIntro: new Audio('MÜZIK_6_SAVAŞ_GİRİŞ'),
-        dialogueSound: new Audio('MÜZIK_7_DIALOGUE_TICK'), 
-        selectSound: new Audio('MÜZIK_8_SELECT_MOVE') // OK HAREKETİ SESİ
+        battleIntro: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/BATTLE-INTRO31.mp3'),
+        dialogueSound: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/ui_2.mp3'), 
+        selectSound: new Audio(null), // OK HAREKETİ SESİ
+        gameOver: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEOVER.mp3')
     };
     
+// battle2.mp3
+//   ui_2.mp3
+   //  ui_1.mp3 balon gibi aq
+   // select_1.mp3
+
+
+
+
+
     audio.boot.loop = false;
     audio.world.loop = true;
-    audio.battle.loop = true;
+   // audio.battle.loop = true;
     audio.victory.loop = false;
     audio.victoryfinal.loop = false;
     audio.battleIntro.loop = false; 
     audio.dialogueSound.loop = false; 
     audio.selectSound.loop = false; 
     
-    const acilisResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg';
+    const acilisResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic-intro.gif';
     const arkaPlanResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg';
     const haritaArkaPlanURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEBACKGROUND5-C2.jpg';
     const savasArkaPlanURL = 'SAVAŞ_ARKAPLAN_PNG.jpg'; 
@@ -748,6 +758,7 @@
         { // 1. Brock (Easy)
             name: 'Brock',
             sprite: trainerSprites[0],
+            battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle0.mp3', // YENİ MÜZİK LİNKİ 5
             preBattleDialogue: [
                 {speaker: 'Brock', text: "Hey! You're going nowhere until you beat me!"},
                 {speaker: 'Player', text: "Bring it on, Brock! I'm ready to prove myself!"}
@@ -765,6 +776,7 @@
         { // 2. Misty
             name: 'Misty',
             sprite: trainerSprites[1],
+            battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle4.mp3', // YENİ MÜZİK LİNKİ 5
             preBattleDialogue: [
                 {speaker: 'Misty', text: "Water Pokémon are the best! Let's see you try to beat me!"}
             ],
@@ -780,6 +792,7 @@
         { // 3. Lt. Surge
             name: 'Lt. Surge',
             sprite: trainerSprites[2],
+            battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle2.mp3', // YENİ MÜZİK LİNKİ 5
             preBattleDialogue: [
                 {speaker: 'Lt. Surge', text: "Get ready to be shocked by the Lightning Lieutenant!"}
             ],
@@ -795,6 +808,7 @@
         { // 4. Erika
             name: 'Erika',
             sprite: trainerSprites[3],
+            battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle3.mp3', // YENİ MÜZİK LİNKİ 5
             preBattleDialogue: [
                 {speaker: 'Erika', text: "The art of flower arranging and Pokémon battling have one thing in common: discipline. Show me yours."}
             ],
@@ -810,6 +824,7 @@
         { // 5. Champion Blue (Hard)
             name: 'Champion Blue',
             sprite: trainerSprites[4],
+            battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/finalbattle.mp3', // YENİ MÜZİK LİNKİ 5
             preBattleDialogue: [
                 {speaker: 'Blue', text: "I'm the Champion! You're going down, Rookie!"}
             ],
@@ -1207,7 +1222,7 @@
         setTimeout(() => {
             bootScreen.classList.remove('active');
             showWorldMap();
-        }, 5000);
+        }, 13000);
     }
    
     function showWorldMap() {
@@ -1239,55 +1254,63 @@
    
     // BATTLE START FLASH & MUSIC
     function startBattle(trainerIdx) {
-        if (gameState.scene === 'battle' || gameState.scene === 'transition') return;
-        gameState.scene = 'transition';
-       
-        audio.world.pause();
-        audio.world.currentTime = 0;
-       
-        const flashOverlay = document.getElementById('flashOverlay');
-        flashOverlay.classList.add('flash-active');
-       
+    if (gameState.scene === 'battle' || gameState.scene === 'transition') return;
+    gameState.scene = 'transition';
+    
+    audio.world.pause();
+    audio.world.currentTime = 0;
+    
+    const flashOverlay = document.getElementById('flashOverlay');
+    flashOverlay.classList.add('flash-active');
+    
+    try {
+        audio.battleIntro.play().catch(e => console.log("Could not play battle intro music."));
+    } catch(e) {}
+    
+    // MÜZİK DÜZELTMESİ İÇİN YENİ BİR OBJE OLUŞTURULDU
+    const currentBattleMusic = new Audio(trainersData[trainerIdx].battleMusic);
+    currentBattleMusic.loop = true; // Savaş müziği sürekli çalmalı
+    
+    setTimeout(() => {
+        flashOverlay.classList.remove('flash-active');
+        
         try {
-             audio.battleIntro.play().catch(e => console.log("Could not play battle intro music."));
+            // YENİ MÜZİK ÇAĞRISI
+            currentBattleMusic.play().catch(e => console.log("Waiting for interaction to play custom battle music."));
+            // Mevcut savaş objesine müziği ekle (trainerDefeated'da durdurmak için)
+            gameState.currentBattleMusic = currentBattleMusic; 
         } catch(e) {}
-        setTimeout(() => {
-            flashOverlay.classList.remove('flash-active');
-           
-            try {
-                audio.battle.play().catch(e => console.log("Waiting for interaction to play battle music."));
-            } catch(e) {}
-           
-            gameState.scene = 'battle';
-            gameState.trainerIndex = trainerIdx;
-            gameState.currentPokemonIndex = 0;
-            gameState.isPlayerTurn = true;
-           
-            let firstHealthyPokemon = -1;
-            for(let i=0; i < gameState.playerTeam.length; i++) {
-                if(gameState.playerTeam[i].hp > 0) {
-                    firstHealthyPokemon = i;
-                    break;
-                }
+        
+        gameState.scene = 'battle';
+        gameState.trainerIndex = trainerIdx;
+        gameState.currentPokemonIndex = 0;
+        gameState.isPlayerTurn = true;
+        
+        let firstHealthyPokemon = -1;
+        for(let i=0; i < gameState.playerTeam.length; i++) {
+            if(gameState.playerTeam[i].hp > 0) {
+                firstHealthyPokemon = i;
+                break;
             }
-            if(firstHealthyPokemon === -1) {
-                endGame(false);
-                return;
-            }
-            gameState.currentTeamIndex = firstHealthyPokemon;
-            gameState.currentBattle = JSON.parse(JSON.stringify(trainersData[trainerIdx]));
-           
-            document.getElementById('worldContainer').classList.remove('active');
-            document.getElementById('battleContainer').classList.add('active');
-            document.getElementById('trainerName').textContent = gameState.currentBattle.name;
-           
-            gameState.battleMenuState = 'main';
-           
-            updateBattle();
-            // Battle start mesajını diyalog akışı olarak göster
-            showBattleMessageSequence([{speaker: gameState.currentBattle.name, text: `I, ${gameState.currentBattle.name}, challenge you!`}]);
-        }, 2000);
-    }
+        }
+        if(firstHealthyPokemon === -1) {
+            endGame(false);
+            return;
+        }
+        gameState.currentTeamIndex = firstHealthyPokemon;
+        gameState.currentBattle = JSON.parse(JSON.stringify(trainersData[trainerIdx]));
+        
+        document.getElementById('worldContainer').classList.remove('active');
+        document.getElementById('battleContainer').classList.add('active');
+        document.getElementById('trainerName').textContent = gameState.currentBattle.name;
+        
+        gameState.battleMenuState = 'main';
+        
+        updateBattle();
+        // Battle start mesajını diyalog akışı olarak göster
+        showBattleMessageSequence([{speaker: gameState.currentBattle.name, text: `I, ${gameState.currentBattle.name}, challenge you!`}]);
+    }, 2000);
+}
     // Update battle screen
     function updateBattle() {
         // DÜZELTME: Güvenlik kontrolü, hata mesajını azaltır.
@@ -1485,14 +1508,17 @@
    
     // Trainer defeated
     function trainerDefeated() {
-        audio.battle.pause();
-        audio.battle.currentTime = 0;
-       
-        gameState.trainersDefeated++;
-       
-        for (let poke of gameState.playerTeam) {
-            poke.hp = poke.maxHp;
-        }
+    // Özel savaş müziğini durdur
+    if (gameState.currentBattleMusic) {
+        gameState.currentBattleMusic.pause();
+        gameState.currentBattleMusic.currentTime = 0;
+    }
+    
+    gameState.trainersDefeated++;
+    
+    for (let poke of gameState.playerTeam) {
+        poke.hp = poke.maxHp;
+    }
         const victoryScreen = document.getElementById('victoryScreen');
        
         if (gameState.trainersDefeated >= trainersData.length) {
@@ -1626,25 +1652,28 @@
        
     }
    
-    // End game
     function endGame(won) {
-        for (let key in audio) {
-            audio[key].pause();
-            audio[key].currentTime = 0;
-        }
-        document.getElementById('bootScreen').classList.remove('active');
-        document.getElementById('worldContainer').classList.remove('active');
-        document.getElementById('battleContainer').classList.remove('active');
-        document.getElementById('victoryScreen').classList.remove('active');
-        document.getElementById('transitionScreen').classList.remove('active');
-        const gameOverEl = document.getElementById('gameOverImg');
-        gameOverEl.classList.add('active'); // Bu tüm game container'ı kaplayacak
-        if (won) {
-            gameOverEl.innerHTML = `<img src="${kazandinURL}" alt="Champion!" style="width:100%; height:100%; object-fit:cover;">`;
-        } else {
-            gameOverEl.innerHTML = `<img src="${kaybettinURL}" alt="Game Over" style="width:100%; height:100%; object-fit:cover;">`;
-        }
+    for (let key in audio) {
+        audio[key].pause();
+        audio[key].currentTime = 0;
     }
+    document.getElementById('bootScreen').classList.remove('active');
+    document.getElementById('worldContainer').classList.remove('active');
+    document.getElementById('battleContainer').classList.remove('active');
+    document.getElementById('victoryScreen').classList.remove('active');
+    document.getElementById('transitionScreen').classList.remove('active');
+    const gameOverEl = document.getElementById('gameOverImg');
+    gameOverEl.classList.add('active'); // Bu tüm game container'ı kaplayacak
+    if (won) {
+        gameOverEl.innerHTML = `<img src="${kazandinURL}" alt="Champion!" style="width:100%; height:100%; object-fit:cover;">`;
+    } else {
+        // KAYBETTİNİZ KISMI
+        try {
+            audio.gameOver.play().catch(e => console.log("Game Over music failed to play:", e));
+        } catch(e) {}
+        gameOverEl.innerHTML = `<img src="${kaybettinURL}" alt="Game Over" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+}
     // Movement check (Aynı Kaldı)
     function canMoveTo(x, y) {
         return labyrinthPath.some(pos => pos.x === x && pos.y === y);
