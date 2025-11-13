@@ -1,5 +1,7 @@
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -723,7 +725,8 @@
         battleIntro: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/BATTLE-INTRO31.mp3'),
         dialogueSound: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/ui_2.mp3'), 
         selectSound: new Audio(null), // OK HAREKETİ SESİ
-        gameOver: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEOVER.mp3')
+        gameOver: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEOVER.mp3'),
+        faint: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle-start.mp3')
     };
     
 // battle2.mp3
@@ -744,10 +747,14 @@
     audio.dialogueSound.loop = false; 
     audio.selectSound.loop = false; 
     
+//  agenticworld3.jpg
+//  battlearena2BW.jpg
+//  battlearena4.jpg
+
     const acilisResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic-intro.gif';
     const arkaPlanResmiURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg';
     const haritaArkaPlanURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/GAMEBACKGROUND5-C2.jpg';
-    const savasArkaPlanURL = 'SAVAŞ_ARKAPLAN_PNG.jpg'; 
+    const savasArkaPlanURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agenticworld3.jpg'; 
     const savasGirisURL = 'https://media.giphy.com/media/l41lO5G7lEoyHw9oA/giphy.gif'; // DÜZELTME: GIF PLACEHOLDER
     
     const normalKupaURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg'; // DÜZELTME: Normal Cup GIF
@@ -771,15 +778,25 @@
         'TRAINER_5_BLUE_PNG'
     ];
     document.getElementById('gameWrapper').style.backgroundImage = `url(${arkaPlanResmiURL})`;
-    document.getElementById('battleField').style.backgroundImage = `url(${savasArkaPlanURL})`;
+    // document.getElementById('battleField').style.backgroundImage = `url(${savasArkaPlanURL})`;
     // POKÉMON TRAINERS
+
+
+    
+
+
+
+
+
     const trainersData = [
         { // 1. Brock (Easy)
             name: 'Brock',
             sprite: trainerSprites[0],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle0.mp3', // YENİ MÜZİK LİNKİ 5
+            battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect1jpg.jpg',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3', // Misty yenilince çalacak müzik
             preBattleDialogue: [
-                {speaker: 'Brock', text: "Hey! You're going nowhere until you beat me!"},
+                {speaker: 'Brock', text: "Hey! Why dont you fuck yourself asshole!"},
                 {speaker: 'Player', text: "Bring it on, Brock! I'm ready to prove myself!"}
             ],
             postBattleDialogue: [
@@ -796,6 +813,9 @@
             name: 'Misty',
             sprite: trainerSprites[1],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle4.mp3', // YENİ MÜZİK LİNKİ 5
+            battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect2.jpg',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
+            
             preBattleDialogue: [
                 {speaker: 'Misty', text: "Water Pokémon are the best! Let's see you try to beat me!"}
             ],
@@ -812,6 +832,8 @@
             name: 'Lt. Surge',
             sprite: trainerSprites[2],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle2.mp3', // YENİ MÜZİK LİNKİ 5
+            battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect4.jpg',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
             preBattleDialogue: [
                 {speaker: 'Lt. Surge', text: "Get ready to be shocked by the Lightning Lieutenant!"}
             ],
@@ -828,6 +850,8 @@
             name: 'Erika',
             sprite: trainerSprites[3],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle3.mp3', // YENİ MÜZİK LİNKİ 5
+            battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect4_2.jpg',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
             preBattleDialogue: [
                 {speaker: 'Erika', text: "The art of flower arranging and Pokémon battling have one thing in common: discipline. Show me yours."}
             ],
@@ -844,6 +868,7 @@
             name: 'Champion Blue',
             sprite: trainerSprites[4],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/finalbattle.mp3', // YENİ MÜZİK LİNKİ 5
+            battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/finale2.jpg',
             preBattleDialogue: [
                 {speaker: 'Blue', text: "I'm the Champion! You're going down, Rookie!"}
             ],
@@ -857,10 +882,11 @@
             ]
         }
     ];
+
    
     // Player Pokémon
     const playerTeam = [
-        { name: 'Charizard', maxHp: 120, hp: 120, moves: [{name: 'Flamethrower', power: 40}, {name: 'Dragon Claw', power: 35}, {name: 'Fly', power: 30}, {name: 'Overheat', power: 45}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png' },
+        { name: 'Charizard', maxHp: 120, hp: 120, moves: [{name: 'Flamethrower', power: 400}, {name: 'Dragon Claw', power: 35}, {name: 'Fly', power: 30}, {name: 'Overheat', power: 45}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png' },
         { name: 'Blastoise', maxHp: 120, hp: 120, moves: [{name: 'Hydro Pump', power: 42}, {name: 'Ice Beam', power: 32}, {name: 'Surf', power: 38}, {name: 'Blizzard', power: 40}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png' },
         { name: 'Venusaur', maxHp: 115, hp: 115, moves: [{name: 'Solar Beam', power: 40}, {name: 'Sludge Bomb', power: 35}, {name: 'Leech Seed', power: 20}, {name: 'Synthesis', power: 25}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png' }
     ];
@@ -1276,6 +1302,12 @@
     if (gameState.scene === 'battle' || gameState.scene === 'transition') return;
     gameState.scene = 'transition';
     
+    // 1. DÜŞMAN ARKA PLANINI AYARLA
+    const selectedTrainer = trainersData[trainerIdx];
+    document.getElementById('battleField').style.backgroundImage = `url(${selectedTrainer.battleBackground})`;
+    document.getElementById('battleField').style.backgroundSize = 'cover'; // Kaplama ayarını koru
+    document.getElementById('battleField').style.backgroundPosition = 'center'; // Ortalamayı koru
+    
     audio.world.pause();
     audio.world.currentTime = 0;
     
@@ -1475,6 +1507,11 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
         // Hata kontrolü tekrar
         if (!gameState.currentBattle || gameState.currentPokemonIndex >= gameState.currentBattle.pokemon.length) return;
         battleMessageEl.textContent = `Enemy ${gameState.currentBattle.pokemon[gameState.currentPokemonIndex].name} Fainted!`;
+
+        try {
+        audio.faint.currentTime = 0;
+        audio.faint.play().catch(e => {});
+    } catch(e) {}
        
         const enemySprite = document.getElementById('enemySprite');
         enemySprite.classList.add('fainted'); // Ana animasyon
@@ -1500,7 +1537,12 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
     function defeatPlayerPokemon() {
         battleMessageEl.textContent = `${gameState.playerTeam[gameState.currentTeamIndex].name} Fainted!`;
        
-        const playerSprite = document.getElementById('playerSprite');
+try {
+        audio.faint.currentTime = 0;
+        audio.faint.play().catch(e => {});
+    } catch(e) {}
+
+    const playerSprite = document.getElementById('playerSprite');
         playerSprite.classList.add('fainted'); // Ana animasyon
         // EKRAN TİTREMESİ EKLE (immersive!)
         const battleField = document.getElementById('battleField');
@@ -1526,7 +1568,9 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
     }
    
     // Trainer defeated
-    function trainerDefeated() {
+    // Trainer defeated
+// Trainer defeated
+function trainerDefeated() {
     // Özel savaş müziğini durdur
     if (gameState.currentBattleMusic) {
         gameState.currentBattleMusic.pause();
@@ -1538,34 +1582,57 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
     for (let poke of gameState.playerTeam) {
         poke.hp = poke.maxHp;
     }
-        const victoryScreen = document.getElementById('victoryScreen');
-       
-        if (gameState.trainersDefeated >= trainersData.length) {
-            try {
-                audio.victoryfinal.play().catch(e => {});
-            } catch(e) {}
-           
-            document.getElementById('battleContainer').classList.remove('active');
-            victoryScreen.classList.add('active');
-           
-            document.getElementById('victoryImageContainer').innerHTML = `<img src="${finalKupaURL}" alt="Champion Cup">`;
-           
-            setTimeout(() => {
-                // Zafer resmi gösterildikten sonra haritaya dönme mantığı olmadığı için ekranı donduruyoruz.
-            }, 5000);
-        } else {
-            try {
-                audio.victory.play().catch(e => {});
-            } catch(e) {}
-            document.getElementById('battleContainer').classList.remove('active');
-            victoryScreen.classList.add('active');
-           
-            document.getElementById('victoryImageContainer').innerHTML = `<img src="${normalKupaURL}" alt="Victory Cup">`;
-            setTimeout(() => {
-                showWorldMap();
-            }, 5000);
-        }
+    const victoryScreen = document.getElementById('victoryScreen');
+    
+    // Yenen antrenörün verilerini al
+    const defeatedTrainerIndex = gameState.trainersDefeated - 1;
+    const defeatedTrainerData = trainersData[defeatedTrainerIndex];
+
+    if (gameState.trainersDefeated >= trainersData.length) {
+        // --- SON BOSS ZAFERİ ---
+        try {
+            audio.victoryfinal.play().catch(e => {});
+        } catch(e) {}
+        
+        document.getElementById('battleContainer').classList.remove('active');
+        victoryScreen.classList.add('active');
+        
+        document.getElementById('victoryImageContainer').innerHTML = `<img src="${finalKupaURL}" alt="Champion Cup">`;
+        
+        setTimeout(() => {
+            // Finalden sonra dünya haritasına dönüş yok
+        }, 5000);
+    } else {
+        // --- NORMAL ANTRENÖR ZAFERİ ---
+        
+        // SADECE TEK TİP GENEL ZAFER MÜZİĞİNİ ÇAL
+        try {
+            audio.victory.currentTime = 0;
+            audio.victory.play().catch(e => {});
+        } catch(e) {}
+        
+        document.getElementById('battleContainer').classList.remove('active');
+        victoryScreen.classList.add('active');
+        
+        document.getElementById('victoryImageContainer').innerHTML = `<img src="${normalKupaURL}" alt="Victory Cup">`;
+        
+        // 5 saniye sonra haritaya dön ve YENİ DÜNYA MÜZİĞİNİ AYARLA
+        setTimeout(() => {
+            
+            if (defeatedTrainerData && defeatedTrainerData.newWorldMusic) {
+                // Mevcut dünya müziğini durdur
+                audio.world.pause();
+                audio.world.currentTime = 0;
+                
+                // Yeni müziği yükle ve audio.world değişkenini kalıcı olarak güncelle
+                audio.world = new Audio(defeatedTrainerData.newWorldMusic);
+                audio.world.loop = true; // Dünya müziği döngü yapmalı
+            }
+            
+            showWorldMap();
+        }, 5000);
     }
+}
    
     // Use Potion
     function usePotion() {
