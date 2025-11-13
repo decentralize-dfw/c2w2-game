@@ -721,7 +721,7 @@
         world: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/gamein.mp3'),
         // battle: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle3.mp3'),
         victory: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/victory.mp3'), 
-        victoryfinal: new Audio('MÜZIK_5_VICTORY_FINAL'), 
+        victoryfinal: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/VICTORY-sound.mp3'), 
         battleIntro: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/BATTLE-INTRO31.mp3'),
         dialogueSound: new Audio('https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/ui_2.mp3'), 
         selectSound: new Audio(null), // OK HAREKETİ SESİ
@@ -733,6 +733,7 @@
 //   ui_2.mp3
    //  ui_1.mp3 balon gibi aq
    // select_1.mp3
+
 
 
 
@@ -757,9 +758,9 @@
     const savasArkaPlanURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agenticworld3.jpg'; 
     const savasGirisURL = 'https://media.giphy.com/media/l41lO5G7lEoyHw9oA/giphy.gif'; // DÜZELTME: GIF PLACEHOLDER
     
-    const normalKupaURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/agentic.jpg'; // DÜZELTME: Normal Cup GIF
-    const finalKupaURL = 'https://media.giphy.com/media/3oKIPEhHNGyW9Gz7Mc/giphy.gif'; // DÜZELTME: Final Cup GIF
-    const kazandinURL = 'KAZANDIN_PNG';
+    const normalKupaURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/youwon.gif'; // DÜZELTME: Normal Cup GIF
+    const finalKupaURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/VICTORY.gif'; // DÜZELTME: Final Cup GIF
+    const kazandinURL = 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/VICTORY.gif';
     const kaybettinURL = 'KAYBETTİN_PNG';
 
     const playerCharacterSprites = {
@@ -794,7 +795,7 @@
             sprite: trainerSprites[0],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle0.mp3', // YENİ MÜZİK LİNKİ 5
             battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect1jpg.jpg',
-            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3', // Misty yenilince çalacak müzik
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/8bit.mp3', // Misty yenilince çalacak müzik
             preBattleDialogue: [
                 {speaker: 'Brock', text: "Hey! Why dont you fuck yourself asshole!"},
                 {speaker: 'Player', text: "Bring it on, Brock! I'm ready to prove myself!"}
@@ -814,8 +815,9 @@
             sprite: trainerSprites[1],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle4.mp3', // YENİ MÜZİK LİNKİ 5
             battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect2.jpg',
-            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/backg-part3.mp3',
             
+
             preBattleDialogue: [
                 {speaker: 'Misty', text: "Water Pokémon are the best! Let's see you try to beat me!"}
             ],
@@ -833,7 +835,7 @@
             sprite: trainerSprites[2],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle2.mp3', // YENİ MÜZİK LİNKİ 5
             battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect4.jpg',
-            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/whyweexist-score4.mp3',
             preBattleDialogue: [
                 {speaker: 'Lt. Surge', text: "Get ready to be shocked by the Lightning Lieutenant!"}
             ],
@@ -851,7 +853,7 @@
             sprite: trainerSprites[3],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle3.mp3', // YENİ MÜZİK LİNKİ 5
             battleBackground: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battleback-sect4_2.jpg',
-            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/intro-jinglee.mp3',
+            newWorldMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/backg-finalpart.mp3',
             preBattleDialogue: [
                 {speaker: 'Erika', text: "The art of flower arranging and Pokémon battling have one thing in common: discipline. Show me yours."}
             ],
@@ -1267,7 +1269,7 @@
         setTimeout(() => {
             bootScreen.classList.remove('active');
             showWorldMap();
-        }, 100);
+        }, 13000);
     }
    
     function showWorldMap() {
