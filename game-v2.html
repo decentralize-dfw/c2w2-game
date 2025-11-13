@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,6 +126,7 @@
         }
        
         .trainerInfo {
+          display: none !important; /* Artık trainerInfo'yu kullanmıyoruz/göstermiyoruz */
             position: absolute;
             top: 5px;
             left: 5px;
@@ -138,14 +141,16 @@
         #battleField {
             flex: 1;
             display: flex;
-            justify-content: space-between;
-            align-items: center; /* Vertical center */
-            padding: 30px 20px; /* Alana sığdırmak için padding artırıldı */
+            justify-content: initial;
+            align-items: initial;
+            padding: 0;      
             background-size: cover;
             background-position: center;
             border-bottom: 2px solid #555;
             gap: 10px; /* Space between */
             position: relative; /* Shake için gerekli */
+
+                 
         }
        
         /* EKRAN TİTREMESİ - Tüm battleField'i salla */
@@ -168,26 +173,37 @@
         }
        
         /* PLAYER (LEFT) */
-        .pokemonSide.player {
-            align-items: flex-start; /* Align left */
-        }
-       
-        .pokemonSide.player .pokemonDisplay {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-direction: row; /* Img left, bar right */
-        }
-        /* ENEMY (RIGHT) */
-        .pokemonSide.enemy {
-            align-items: flex-end; /* Align right */
-        }
-        .pokemonSide.enemy .pokemonDisplay {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-direction: row-reverse; /* Bar left, img right */
-        }
+       .pokemonSide {
+    /* Genel ayarlamaları kaldırın */
+    display: initial;
+    flex-direction: initial;
+    gap: initial;
+    flex: initial;
+    padding: initial;
+    min-width: initial;
+}
+
+.pokemonSide.player { 
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+   }
+
+
+
+.pokemonSide.enemy {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.pokemonSide.player .pokemonDisplay {
+    display: flex;
+    flex-direction: column; /* Sprite ve HP kutusu alt alta olsun */
+}
+.pokemonSide.enemy .pokemonDisplay {
+    display: flex;
+    flex-direction: column-reverse; /* Sprite üstte, HP kutusu altta olsun (Klasik düzen) */
+}
        
         .trainerSprite {
             width: 100px;
@@ -196,7 +212,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #2a2a2a;
+            background: transparent;
         }
        
         .trainerSprite img {
@@ -206,16 +222,16 @@
             image-rendering: pixelated;
         }
        
-        .pokemonSprite {
-            width: 100px;
-            height: 100px;
-            border: 2px solid #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #2a2a2a;
-            transition: all 0.3s;
-        }
+        .pokemonSprite { 
+          width: 180px;
+          height: 180px;
+          border: 0px solid #555; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          background: transparent;
+          /* Sadece görünür kalsın */ 
+          transition: all 0.3s; }
        
         .pokemonSprite img {
             width: 100%;
@@ -225,22 +241,37 @@
         }
        
         .pokemonStats {
-            background: #555;
-            color: #ccc;
-            padding: 6px 10px;
-            border: 1px solid #777;
-            font-size: 11px;
-            text-align: center;
-            min-width: 100px;
-        }
+    background: #555;
+    color: #ccc;
+    padding: 6px 10px;
+    border: 1px solid #777;
+    font-size: 11px;
+    text-align: center;
+    min-width: 120px; /* Boyutunu büyüt */
+    
+    /* YENİ MUTLAK KONUMLANDIRMA */
+    position: absolute; 
+    z-index: 50;
+    
+    /* Diğer stilleri buraya ekleyeceğiz (aşağıya bakınız) */
+}
+
+
+
+/* OYUNCU BİLGİ KUTUSU (Sağ Alt) */
+.pokemonSide.player .pokemonStats {
+    bottom: 5px;
+    right: 5px;
+}
+
        
         .hpBar {
-            width: 100px;
-            height: 8px;
-            background: #000;
-            border: 1px solid #888;
-            margin: 3px 0;
-        }
+    width: 120px;
+    height: 10px; /* Biraz kalınlaştırma */
+    background: #000;
+    border: 1px solid #888;
+    margin: 3px 0;
+}
        
         .hpFill {
             height: 100%;
@@ -588,50 +619,38 @@
         </div>
        
         <div id="battleContainer">
-            <div class="trainerInfo">
-                <div id="trainerName">Trainer</div>
-                <div style="margin-top:3px; color:#999;">Pokémon <span id="pokemonIndex">1</span>/3</div>
-            </div>
-           
-            <div id="battleField">
-               
-                <!-- Player (Left Side) -->
-                <div class="pokemonSide player">
-                    <div style="font-size: 10px; color: #ccc; margin-bottom: 5px;">YOUR POKEMON</div>
-                    <div class="pokemonDisplay">
-                        <div>
-                            <div class="pokemonSprite" id="playerSprite"></div>
-                        </div>
-                        <div>
-                            <div class="pokemonStats">
-                                <div id="playerName" style="font-weight: bold; margin-bottom: 3px;">Pokémon</div>
-                                <div class="hpBar">
-                                    <div class="hpFill" id="playerHpBar" style="width: 100%;"></div>
-                                </div>
-                                <div style="font-size: 10px;"><span id="playerHp">100</span>/<span id="playerMaxHp">100</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Enemy (Right Side) -->
-                <div class="pokemonSide enemy">
-                    <div style="font-size: 10px; color: #ccc; margin-bottom: 5px;">ENEMY</div>
-                    <div class="pokemonDisplay">
-                        <div>
-                            <div class="pokemonSprite" id="enemySprite"></div>
-                        </div>
-                        <div>
-                            <div class="pokemonStats">
-                                <div id="enemyName" style="font-weight: bold; margin-bottom: 3px;">Enemy</div>
-                                <div class="hpBar">
-                                    <div class="hpFill" id="enemyHpBar" style="width: 100%;"></div>
-                                </div>
-                                <div style="font-size: 10px;"><span id="enemyHp">100</span>/<span id="enemyMaxHp">100</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
+           <div id="battleField">
+    <div class="pokemonStats" id="enemyStatsBox" style="position: absolute; top: 5px; left: 105px; text-align: left; min-width: 150px;">
+        <div id="enemyName" style="font-weight: bold; margin-bottom: 3px; color: #fff;">Enemy</div>
+        <div class="hpBar" style="width: 150px; height: 12px; margin-left: 20px;">
+            <div class="hpFill" id="enemyHpBar" style="width: 100%;"></div>
+        </div>
+        <div style="font-size: 10px; position: absolute; top: 25px; left: 5px; color: #fff; background: #555; padding: 1px 3px;">
+            <span id="enemyHp">100</span>/<span id="enemyMaxHp">100</span>
+        </div>
+    </div>
+    
+    <div class="pokemonStats" id="playerStatsBox" style="position: absolute; bottom: 5px; right: 105px; text-align: right; min-width: 150px;">
+        <div id="playerName" style="font-weight: bold; margin-bottom: 3px; color: #fff;">Pokémon</div>
+        <div class="hpBar" style="width: 150px; height: 12px; margin-right: 20px;">
+            <div class="hpFill" id="playerHpBar" style="width: 100%;"></div>
+        </div>
+        <div style="font-size: 10px; position: absolute; top: 25px; right: 5px; color: #fff; background: #555; padding: 1px 3px;">
+            <span id="playerHp">100</span>/<span id="playerMaxHp">100</span>
+        </div>
+    </div>
+
+    <div class="pokemonSide enemy">
+        <div class="pokemonSprite" id="enemySprite"></div>
+    </div>
+    
+    <div class="pokemonSide player">
+        <div class="pokemonSprite" id="playerSprite"></div>
+    </div>
+
+</div>
+            
            
             <div id="battleUI">
                 <!-- Main Battle Menu -->
@@ -1222,7 +1241,7 @@
         setTimeout(() => {
             bootScreen.classList.remove('active');
             showWorldMap();
-        }, 13000);
+        }, 100);
     }
    
     function showWorldMap() {
@@ -1302,7 +1321,7 @@
         
         document.getElementById('worldContainer').classList.remove('active');
         document.getElementById('battleContainer').classList.add('active');
-        document.getElementById('trainerName').textContent = gameState.currentBattle.name;
+        // document.getElementById('trainerName').textContent = gameState.currentBattle.name;
         
         gameState.battleMenuState = 'main';
         
@@ -1339,7 +1358,7 @@
         enemySpriteEl.innerHTML = `<img src="${enemyPoke.imageUrl}" alt="${enemyPoke.name}">`;
         enemySpriteEl.classList.remove('fainted');
        
-        document.getElementById('pokemonIndex').textContent = `${gameState.currentPokemonIndex + 1}/${gameState.currentBattle.pokemon.length}`;
+        //document.getElementById('pokemonIndex').textContent = `${gameState.currentPokemonIndex + 1}/${gameState.currentBattle.pokemon.length}`;
        
         const moveGrid = moveGridEl;
         moveGrid.innerHTML = '';
@@ -1398,8 +1417,8 @@
         const damage = Math.floor(Math.random() * 10 + move.power * 1.5);
         enemyPoke.hp = Math.max(0, enemyPoke.hp - damage);
        
-        document.getElementById('playerSprite').parentElement.classList.add('shake');
-        setTimeout(() => document.getElementById('playerSprite').parentElement.classList.remove('shake'), 150);
+        document.getElementById('playerSprite').classList.add('shake'); // YENİ VE DOĞRU
+setTimeout(() => document.getElementById('playerSprite').classList.remove('shake'), 150);
        
         showBattleMessageSequence([{speaker: playerPoke.name, text: `Used ${move.name}! ${damage} DMG!`}], () => {
             if (enemyPoke.hp <= 0) {
@@ -1420,8 +1439,8 @@
         const damage = Math.floor(Math.random() * 10 + move.power * 1.5);
         playerPoke.hp = Math.max(0, playerPoke.hp - damage);
        
-        document.getElementById('enemySprite').parentElement.classList.add('shake');
-        setTimeout(() => document.getElementById('enemySprite').parentElement.classList.remove('shake'), 150);
+        document.getElementById('enemySprite').classList.add('shake'); // YENİ VE DOĞRU
+setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'), 150);
        
         showBattleMessageSequence([{speaker: enemyPoke.name, text: `Enemy ${enemyPoke.name} used ${move.name}! ${damage} DMG!`}], () => {
             if (playerPoke.hp <= 0) {
