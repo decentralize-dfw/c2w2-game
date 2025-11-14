@@ -187,8 +187,8 @@
 
 .pokemonSide.player { 
   position: absolute;
-  bottom: 5px;
-  left: 5px;
+  bottom: 15px;
+  left: 15px;
    }
 
 
@@ -889,12 +889,21 @@
         }
     ];
 
-   
+   // face-1.png
+   // face-2.png
+   // face-3.png
+   // face-4.png
+   // mine-1.png
+   // mine-2.png
+   // mine-3.png
+   // mine-4.png
+   // mine-5.png
     // Player Pokémon
     const playerTeam = [
-        { name: 'Charizard', maxHp: 120, hp: 120, moves: [{name: 'Flamethrower', power: 40}, {name: 'Dragon Claw', power: 35}, {name: 'Fly', power: 30}, {name: 'Overheat', power: 45}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png' },
-        { name: 'Blastoise', maxHp: 120, hp: 120, moves: [{name: 'Hydro Pump', power: 42}, {name: 'Ice Beam', power: 32}, {name: 'Surf', power: 38}, {name: 'Blizzard', power: 40}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png' },
-        { name: 'Venusaur', maxHp: 115, hp: 115, moves: [{name: 'Solar Beam', power: 40}, {name: 'Sludge Bomb', power: 35}, {name: 'Leech Seed', power: 20}, {name: 'Synthesis', power: 25}], imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png' }
+        { name: 'Charizard', maxHp: 120, hp: 120, moves: [{name: 'Flamethrower', power: 40}, {name: 'Dragon Claw', power: 35}, {name: 'Fly', power: 30}, {name: 'Overheat', power: 45}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-1.png' },
+        { name: 'Blastoise', maxHp: 120, hp: 120, moves: [{name: 'Hydro Pump', power: 42}, {name: 'Ice Beam', power: 32}, {name: 'Surf', power: 38}, {name: 'Blizzard', power: 40}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-2.png' },
+        { name: 'Venusaur', maxHp: 115, hp: 115, moves: [{name: 'Solar Beam', power: 40}, {name: 'Sludge Bomb', power: 35}, {name: 'Leech Seed', power: 20}, {name: 'Synthesis', power: 25}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-3.png' },
+        { name: 'Venusaur', maxHp: 115, hp: 115, moves: [{name: 'Solar Beam', power: 40}, {name: 'Sludge Bomb', power: 35}, {name: 'Leech Seed', power: 20}, {name: 'Synthesis', power: 25}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-4.png' }
     ];
    
     // MAP PATH (Aynı Kaldı)
@@ -1273,7 +1282,7 @@
         setTimeout(() => {
             bootScreen.classList.remove('active');
             showWorldMap();
-        }, 13000);
+        }, 100);  // İNTRO intro 13000
     }
    
     function showWorldMap() {
