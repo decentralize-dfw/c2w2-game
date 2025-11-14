@@ -358,11 +358,12 @@
             display: flex;
         }
         .switchGrid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 5px;
-            flex: 1;
-        }
+    display: grid;
+    /* BU SATIRI DEĞİŞTİRİN */
+    grid-template-columns: 1fr 1fr 1fr 1fr; 
+    gap: 5px;
+    flex: 1;
+}
         .switchBtn {
             background: #444;
             color: #ccc;
@@ -1172,7 +1173,7 @@
         } else if (gameState.battleMenuState === 'move') {
             buttons = Array.from(document.querySelectorAll('#moveGrid .battleBtn')); // Sadece saldırı butonları
         } else if (gameState.battleMenuState === 'switch') {
-            numCols = 3;
+            numCols = 4;
             buttons = Array.from(document.querySelectorAll('#switchGrid .switchBtn:not(:disabled)'));
             if (document.getElementById('cancelSwitchBtn')) {
                 buttons.push(document.getElementById('cancelSwitchBtn'));
@@ -1443,7 +1444,7 @@
             itemSectionEl.style.display = 'none';
            
             // Switch menüsünü göster ve seçimleri güncelle
-            showSwitchPokemonMenu(true);
+            showSwitchPokemonMenu();
         }
         if (gameState.isPlayerTurn) {
              updateMenuSelection();
@@ -1550,37 +1551,34 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
    
     // Player pokemon fainted
     function defeatPlayerPokemon() {
-        battleMessageEl.textContent = `${gameState.playerTeam[gameState.currentTeamIndex].name} Fainted!`;
-       
-try {
-        audio.faint.currentTime = 0;
-        audio.faint.play().catch(e => {});
-    } catch(e) {}
+    battleMessageEl.textContent = `${gameState.playerTeam[gameState.currentTeamIndex].name} Fainted!`;
+    
+    try {
+        audio.faint.currentTime = 0;
+        audio.faint.play().catch(e => {});
+    } catch(e) {}
 
-    const playerSprite = document.getElementById('playerSprite');
-        playerSprite.classList.add('fainted'); // Ana animasyon
-        // EKRAN TİTREMESİ EKLE (immersive!)
-        const battleField = document.getElementById('battleField');
-        battleField.classList.add('faintScreenShake');
-        let nextHealthyPokemon = -1;
-        for (let i = 0; i < gameState.playerTeam.length; i++) {
-            if (gameState.playerTeam[i].hp > 0) {
-                nextHealthyPokemon = i;
-                break;
-            }
-        }
-       
-        setTimeout(() => {
-            battleField.classList.remove('faintScreenShake'); // Temizle
-            if (nextHealthyPokemon !== -1) {
-                showBattleMessageSequence([{speaker: 'Player', text: `Go, ${gameState.playerTeam[nextHealthyPokemon].name}!`}], () => {
-                    executeSwitch(nextHealthyPokemon, true);
-                });
-            } else {
-                endGame(false);
-            }
-        }, 4500); // Animasyon süresine göre ayarlandı
-    }
+    const playerSprite = document.getElementById('playerSprite');
+    playerSprite.classList.add('fainted'); // Ana animasyon
+    const battleField = document.getElementById('battleField');
+    battleField.classList.add('faintScreenShake');
+    
+    let hasHealthyPokemon = gameState.playerTeam.some(p => p.hp > 0); 
+
+    setTimeout(() => {
+        battleField.classList.remove('faintScreenShake'); // Temizle
+        
+        if (hasHealthyPokemon) {
+            // Pokémon bayıldıysa zorunlu geçişi işaretle ve switch menüsünü aç
+            gameState.isForcedSwitch = true; // <--- YENİ EKLENEN KISIM
+            gameState.battleMenuState = 'switch';
+            updateBattle(); // Bu, showSwitchPokemonMenu'yu (zorunlu modda) çağıracak
+            showBattleMessageSequence([{speaker: 'Player', text: `You must choose a new Pokémon!`}]); 
+        } else {
+            endGame(false);
+        }
+    }, 4500);
+}
    
     // Trainer defeated
     // Trainer defeated
@@ -1675,41 +1673,63 @@ function trainerDefeated() {
     }
    
     // Show switch menu
-    function showSwitchPokemonMenu(isUpdate = false) {
-        if (!isUpdate && !gameState.isPlayerTurn) return;
-       
-        // Bu fonksiyon, updateBattle'dan çağrılırken gameState.battleMenuState zaten 'switch' olmalı.
-        if(!isUpdate) {
-            gameState.battleMenuState = 'switch';
-            gameState.menuSelectionIndex = 0;
-        }
-        moveGridEl.style.display = 'none';
-        itemSectionEl.style.display = 'none';
-        switchScreen.classList.add('active');
-        switchGrid.innerHTML = '';
-        gameState.playerTeam.forEach((poke, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'switchBtn';
-            btn.innerHTML = `
-                <img src="${poke.imageUrl}" alt="${poke.name}">
-                <div>${poke.name}</div>
-                <div>${poke.hp} / ${poke.maxHp} HP</div>
-            `;
-           
-            if (poke.hp <= 0) {
-                btn.disabled = true;
-                btn.innerHTML += "<span>FAINTED</span>";
-            }
-            if (index === gameState.currentTeamIndex) {
-                btn.disabled = true;
-                btn.innerHTML += "<span>ACTIVE</span>";
-            }
-           
-            switchGrid.appendChild(btn);
-        });
-       
-        updateMenuSelection();
+    // YENİ FONKSİYON
+function showSwitchPokemonMenu() {
+    // isForcedSwitch değişkeni, eğer oyuncu Pokémon'u bayıldıysa (defeatPlayerPokemon'da) 'true' olur.
+    // Varsayılan olarak (switch butonuna basıldığında) 'false' kabul edilir.
+    const isForced = gameState.isForcedSwitch || false; 
+
+    // isForcedSwitch'i temizle, böylece bir sonraki çağrı normal olur
+    gameState.isForcedSwitch = false; 
+
+    if (!gameState.isPlayerTurn && !isForced) return;
+
+    gameState.battleMenuState = 'switch';
+    if (!isForced) { // Zorunlu değilse index'i sıfırla
+        gameState.menuSelectionIndex = 0;
     }
+    
+    moveGridEl.style.display = 'none';
+    itemSectionEl.style.display = 'none';
+    switchScreen.classList.add('active');
+    switchGrid.innerHTML = '';
+    
+    // CANCEL BUTONUNU ZORUNLU GEÇİŞ DURUMUNA GÖRE AYARLA
+    const cancelBtn = document.getElementById('cancelSwitchBtn');
+    if (cancelBtn) {
+        // Eğer Zorunlu Geçiş İSE (Pokémon bayıldıysa), CANCEL KAPALI olmalı.
+        cancelBtn.disabled = isForced; 
+        if (isForced) {
+            cancelBtn.style.opacity = '0.4'; // Soluk göstermek için
+        } else {
+            cancelBtn.style.opacity = '1'; // Normal göstermek için
+        }
+    }
+
+    gameState.playerTeam.forEach((poke, index) => {
+        // ... (Pokémon butonlarını oluşturma mantığı aynı kalacak)
+        const btn = document.createElement('button');
+        btn.className = 'switchBtn';
+        btn.innerHTML = `
+            <img src="${poke.imageUrl}" alt="${poke.name}">
+            <div>${poke.name}</div>
+            <div>${poke.hp} / ${poke.maxHp} HP</div>
+        `;
+        
+        if (poke.hp <= 0) {
+            btn.disabled = true;
+            btn.innerHTML += "<span>FAINTED</span>";
+        }
+        if (index === gameState.currentTeamIndex) {
+            btn.disabled = true;
+            btn.innerHTML += "<span>ACTIVE</span>";
+        }
+        
+        switchGrid.appendChild(btn);
+    });
+    
+    updateMenuSelection();
+}
    
     // Hide switch menu
     function cancelSwitch() {
