@@ -1164,7 +1164,11 @@
    
     // Klavye ile menü seçimi
     function handleBattleMenuInput(e) {
-        if (!gameState.isPlayerTurn || gameState.scene !== 'battle') return;
+        const isForcedSwitchActive = gameState.battleMenuState === 'switch' && document.getElementById('cancelSwitchBtn').disabled;
+
+        if (!gameState.isPlayerTurn && !isForcedSwitchActive) return;
+        
+        if (gameState.scene !== 'battle' && gameState.scene !== 'battleDialogue') return;
         let buttons = [];
         let numCols = 2;
        
@@ -1566,18 +1570,20 @@ setTimeout(() => document.getElementById('enemySprite').classList.remove('shake'
     let hasHealthyPokemon = gameState.playerTeam.some(p => p.hp > 0); 
 
     setTimeout(() => {
-        battleField.classList.remove('faintScreenShake'); // Temizle
-        
-        if (hasHealthyPokemon) {
-            // Pokémon bayıldıysa zorunlu geçişi işaretle ve switch menüsünü aç
-            gameState.isForcedSwitch = true; // <--- YENİ EKLENEN KISIM
-            gameState.battleMenuState = 'switch';
-            updateBattle(); // Bu, showSwitchPokemonMenu'yu (zorunlu modda) çağıracak
-            showBattleMessageSequence([{speaker: 'Player', text: `You must choose a new Pokémon!`}]); 
-        } else {
-            endGame(false);
-        }
-    }, 4500);
+            battleField.classList.remove('faintScreenShake'); // Temizle
+            
+            if (hasHealthyPokemon) {
+                // CRITICAL FIX: ZORUNLU GEÇİŞTE KLAVYE KONTROLÜ İÇİN TURN'Ü OYUNCUYA VER
+                gameState.isPlayerTurn = true; // <--- HATA DÜZELTME
+                
+                gameState.isForcedSwitch = true; 
+                gameState.battleMenuState = 'switch';
+                updateBattle(); 
+                showBattleMessageSequence([{speaker: 'Player', text: `You must choose a new Pokémon!`}]); 
+            } else {
+                endGame(false);
+            }
+        }, 4500);
 }
    
     // Trainer defeated
@@ -1741,7 +1747,10 @@ function showSwitchPokemonMenu() {
         updateBattle();
     }
     // Perform the actual switch
-    function executeSwitch(newIndex, isForcedSwitch = false) {
+    function executeSwitch(newIndex) {
+        // Kontrol: Bayılan Pokémon'dan geçiş mi yapılıyor? (Diyalog sırasının hemen ardından sırayı tekrar oyuncuya vermek için)
+        const wasForcedSwitch = !gameState.isPlayerTurn && gameState.battleMenuState === 'switch'; 
+
         if (newIndex === gameState.currentTeamIndex) return;
        
         const oldPoke = gameState.playerTeam[gameState.currentTeamIndex].name;
@@ -1760,13 +1769,17 @@ function showSwitchPokemonMenu() {
             gameState.battleMenuState = 'main';
             updateBattle();
            
-            if (isForcedSwitch) {
+            // Eğer zorunlu geçişse (yani oyuncunun sırası değildi)
+            if (wasForcedSwitch) {
+                // Sırayı tekrar oyuncuya ver
                 setTimeout(() => {
                     gameState.isPlayerTurn = true;
                     gameState.battleMenuState = 'main';
                     updateBattle();
+                    showBattleMessageSequence([{speaker: 'Player', text: `What will you do?`}]); // Yeni aksiyon mesajı
                 }, 1000);
             } else {
+                // Normal switch ise (oyuncunun sırasıydı) sıra düşmana geçer
                 setTimeout(enemyAttack, 1500);
             }
         });
@@ -1924,9 +1937,3 @@ function showSwitchPokemonMenu() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
