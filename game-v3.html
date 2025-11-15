@@ -791,7 +791,9 @@
 
 
     const trainersData = [
-        { // 1. Brock (Easy)
+       
+       
+       { // 1. Brock (Easy)
             name: 'Seize',
             sprite: trainerSprites[0],
             battleMusic: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/battle0.mp3', // YENİ MÜZİK LİNKİ 5
@@ -819,6 +821,7 @@
                 
             ]
         },
+
         { // 2. Misty
             name: 'Lydia',
             sprite: trainerSprites[1],
@@ -828,17 +831,24 @@
             
 
             preBattleDialogue: [
-                {speaker: 'Lydia', text: "Water Pokémon are the best! Let's see you try to beat me!"}
+                {speaker: 'Lydia', text: "Art derivative Agents are the best! Let's see you try to beat me!"},
+                 {speaker: 'Player', text: "You mean AI gen copypasta shit?"},
+                 {speaker: 'Lydia', text: "Naa. You have no idea what you are trashtalk about. Sportsmenship, but I'll reshape your Play-doh ass."},
+                  {speaker: 'Player', text: "Try me!"}
             ],
             postBattleDialogue: [
-                {speaker: 'Lydia', text: "Wow, you're strong! I underestimated you."}
+                {speaker: 'Lydia', text: "Wow, maybe the market is not ready for artistic agents. I'll be waiting here."},
+                {speaker: 'Player', text: "I'll be back Play-doh! Say hi to Henri..."},
+                {speaker: 'Lydia', text: "He does not know that I'm here, fighting agents."},
+                 {speaker: 'Player', text: "Enough. get lost bruh..."},
             ],
             pokemon: [
-                { name: 'Devoured Remnant', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-1.png', maxHp: 80, hp: 80, moves: [{name: 'Hydro Pump', power: 22}, {name: 'Power Gem', power: 18}, {name: 'Rapid Spin', power: 10}, {name: 'Recover', power: 15}] },
-                { name: 'Squallor', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-2.png', maxHp: 85, hp: 85, moves: [{name: 'Waterfall', power: 20}, {name: 'Megahorn', power: 22}, {name: 'Horn Drill', power: 25}, {name: 'Peck', power: 8}] },
-                { name: 'Wrestler of Silence', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-3.png', maxHp: 110, hp: 110, moves: [{name: 'Hydro Pump', power: 25}, {name: 'Ice Beam', power: 20}, {name: 'Dragon Pulse', power: 22}, {name: 'Thunderbolt', power: 18}] }
+                { name: 'Devoured Remnant', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-1.png', maxHp: 180, hp: 180, moves: [{name: 'Paris Exhibition', power: 22}, {name: 'Flesh and Blood', power: 18}, {name: 'Hate & Love & Hate', power: 10}, {name: 'Crucufixion', power: 15}] },
+                { name: 'Squallor', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-2.png', maxHp: 125, hp: 125, moves: [{name: 'Milano colonne birra becks', power: 20}, {name: 'Blow stripclub glow powder', power: 22}, {name: 'Dom p at nigthlub', power: 25}, {name: 'Become 3D from a painting', power: 8}] },
+                { name: 'Wrestler of Silence', imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/T2-3.png', maxHp: 190, hp: 190, moves: [{name: 'Motion with Brush', power: 25}, {name: 'Miraculous Accident', power: 20}, {name: 'Post human wrestling', power: 22}, {name: 'Underground Bar Punch', power: 18}] }
             ]
         },
+        
         { // 3. Lt. Surge
             name: 'Lt. Surge',
             sprite: trainerSprites[2],
@@ -906,7 +916,7 @@
     // Player Pokémon
     const playerTeam = [
         { name: 'Curator', maxHp: 120, hp: 120, moves: [{name: 'Ask about recent sales', power: 50}, {name: 'curatorial text tsunami', power: 15}, {name: 'opening prosecco  tipsyness', power: 20}, {name: 'usage the word : Speculative', power: 65}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-1.png' },
-        { name: 'Memelegance', maxHp: 100, hp: 100, moves: [{name: 'copypasta', power: 42}, {name: 'NGMI', power: 12}, {name: 'big if true', power: 28}, {name: 'up only', power: 60}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-2.png' },
+        { name: 'Memelegance', maxHp: 100, hp: 100, moves: [{name: 'copypasta', power: 42}, {name: 'thats what she said', power: 12}, {name: 'big if true', power: 28}, {name: 'up only', power: 60}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-2.png' },
         { name: 'Founder Ape', maxHp: 130, hp: 130, moves: [ {name: 'Pump Fartcoin', power: 25}, {name: 'QT G4rg4', power: 20},{name: 'Build M$ NFT brand', power: 80}, {name: 'Buy Punks IP', power: 55}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-3.png' },
         { name: 'Chromozom', maxHp: 145, hp: 145, moves: [{name: 'Ignore DMs', power: 40}, {name: 'ArtTank Farm', power: 5}, {name: 'Buy Grail', power: 60}, {name: 'Throw GM', power: 25}], imageUrl: 'https://raw.githubusercontent.com/decentralize-dfw/c2w2-game/main/zoom-4.png' }
     ];
