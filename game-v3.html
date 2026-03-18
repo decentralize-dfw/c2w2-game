@@ -105,13 +105,14 @@
         #mapFooter {
             width: 100%;
             height: 30px;
-            background: #1a1a1a;
-            border-top: 2px solid #555;
+            background: #060610;
+            border-top: 2px solid #1a3a1a;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            color: #666;
+            font-size: 9px;
+            color: #2a6a2a;
+            letter-spacing: 1px;
             font-family: 'PixelSix', monospace;
         }
        
@@ -120,7 +121,7 @@
             height: 100%;
             display: none;
             flex-direction: column;
-            background: #3a3a3a;
+            background: #0d0d1e;
         }
        
         #battleContainer.active {
@@ -282,8 +283,8 @@
         }
        
         #battleUI {
-            background: #2a2a2a;
-            border-top: 2px solid #555;
+            background: #0a0a1a;
+            border-top: 2px solid #1a1a3a;
             padding: 10px;
             display: flex;
             flex-direction: column;
@@ -294,15 +295,17 @@
         }
        
         .battleMessage {
-            background: #3a3a3a;
-            border: 1px solid #555;
+            background: #0a0a1e;
+            border: 2px solid #1e5a1e;
             padding: 8px;
-            color: #ccc;
+            color: #00ff88;
             font-size: 11px;
             min-height: 24px;
             display: flex;
             align-items: center;
             position: relative;
+            border-radius: 0;
+            box-shadow: 2px 2px 0 #000;
         }
        
         .moveGrid {
@@ -313,25 +316,28 @@
        
         .battleBtn {
             padding: 6px;
-            background: #555;
-            color: #ccc;
-            border: 1px solid #777;
+            background: #111122;
+            color: #ccccff;
+            border: 2px solid #3a3a6a;
+            border-radius: 0;
             cursor: pointer;
             font-size: 10px;
             font-family: 'PixelSix', monospace;
             font-weight: bold;
             outline: none;
+            box-shadow: 2px 2px 0 #000;
         }
-       
-        /* KLAVYE ODAK NOKTASI İÇİN YENİ STİL */
+
+        /* KLAVYE ODAK NOKTASI İÇİN PIXEL STİL */
         .battleBtn.selected:not(:disabled),
         .switchBtn.selected:not(:disabled) {
-            background: #007bff;
-            border-color: #0056b3;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
+            background: #003300;
+            border-color: #00cc44;
+            color: #00ff88;
+            box-shadow: 2px 2px 0 #000, 0 0 6px rgba(0,204,68,0.5);
         }
-       
-        .battleBtn:hover:not(:disabled) { background: #666; }
+
+        .battleBtn:hover:not(:disabled) { background: #1e1e3a; color: #fff; }
         .battleBtn:disabled { opacity: 0.4; cursor: not-allowed; }
        
         .itemSection {
@@ -346,7 +352,7 @@
             left: 0;
             width: 100%;
             height: 100%; /* Cover battleUI */
-            background: #2a2a2a;
+            background: #0a0a1a;
             z-index: 100;
             display: none;
             flex-direction: column;
@@ -365,9 +371,10 @@
     flex: 1;
 }
         .switchBtn {
-            background: #444;
-            color: #ccc;
-            border: 1px solid #666;
+            background: #0d0d20;
+            color: #aaaaff;
+            border: 2px solid #2a2a5a;
+            border-radius: 0;
             padding: 10px 5px;
             font-size: 10px;
             font-family: 'PixelSix', monospace;
@@ -377,16 +384,15 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-             outline: none;
+            outline: none;
+            box-shadow: 1px 1px 0 #000;
         }
-        .switchBtn:hover:not(:disabled) {
-            background: #555;
-        }
+        .switchBtn:hover:not(:disabled) { background: #1a1a38; }
         .switchBtn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
-            background: #333;
-            color: #777;
+            background: #080818;
+            color: #555577;
         }
         .switchBtn img {
             width: 40px;
@@ -510,15 +516,16 @@
             left: 0;
             width: 100%;
             height: 80px;
-            background: #2a2a2a;
-            border-top: 4px solid #555;
+            background: #0a0a1a;
+            border-top: 3px solid #1e5a1e;
             z-index: 100;
             display: none;
             padding: 10px;
             font-size: 11px;
-            color: #ccc;
+            color: #00ff88;
             align-items: center;
             justify-content: flex-start;
+            box-shadow: 0 -2px 0 #000;
         }
         #mapDialogueOverlay.active {
             display: flex;
@@ -568,7 +575,7 @@
             right: 5px;
             bottom: 2px;
             font-size: 10px;
-            color: #ffb703;
+            color: #ffff00;
             animation: blink 0.5s step-start infinite;
         }
         @keyframes blink {
@@ -579,11 +586,12 @@
             width: 60px;
             height: 60px;
             margin-right: 10px;
-            border: 2px solid #555;
-            background: #1a1a1a;
+            border: 2px solid #1e5a1e;
+            background: #060612;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 1px 1px 0 #000;
         }
         #dialogueCharacterSprite img {
             width: 100%;
@@ -614,8 +622,11 @@
                 width: 100%;
                 min-height: 100vh;
                 padding: 14px 0 22px;
-                /* Atomic Purple şeffaf gradient */
+                /* Atomic Purple + 4px scanline dithering katmanı */
                 background:
+                    repeating-linear-gradient(0deg,
+                        transparent 0px, transparent 3px,
+                        rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px),
                     radial-gradient(ellipse at 22% 12%, rgba(220,180,255,0.55) 0%, transparent 42%),
                     radial-gradient(ellipse at 78% 60%, rgba(80,35,185,0.50) 0%, transparent 52%),
                     radial-gradient(ellipse at 50% 85%, rgba(50,15,120,0.6) 0%, transparent 55%),
@@ -634,6 +645,34 @@
                     inset 0 -10px 30px rgba(0,0,0,0.40),
                     0 10px 50px rgba(0,0,0,0.70);
                 position: relative;
+            }
+
+            /* Pixel dither nokta deseni (şeffaf plastik altında görünen pcb hissi) */
+            #gameWrapper::before {
+                content: '';
+                position: absolute; inset: 0;
+                background-image:
+                    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+                background-size: 3px 3px;
+                pointer-events: none;
+                z-index: 0;
+                border-radius: inherit;
+            }
+            /* Tüm GBC alt elementler dither katmanının üstünde */
+            #gameWrapper > * { position: relative; z-index: 1; }
+
+            /* Ekranda CRT tarama çizgisi efekti */
+            #gameContainer::after {
+                content: '';
+                position: absolute; inset: 0;
+                background: repeating-linear-gradient(
+                    0deg,
+                    transparent 0px, transparent 2px,
+                    rgba(0,0,0,0.11) 2px, rgba(0,0,0,0.11) 4px
+                );
+                pointer-events: none;
+                z-index: 9997;
+                border-radius: 6px;
             }
 
             /* Ekran çerçevesi: 500x500 konteyner mobilde küçültülünce
@@ -679,47 +718,14 @@
                 font-family: 'PixelSix', monospace;
             }
 
-            /* ── Marka yazısı: GAME BOY COLOR ── */
-            #gbcBrandRow {
-                justify-content: center;
-                width: 100%;
-                padding: 8px 0 7px;
-                background: linear-gradient(90deg,
-                    transparent 0%,
-                    rgba(0,0,0,0.38) 18%,
-                    rgba(0,0,0,0.38) 82%,
-                    transparent 100%);
-                font-size: 10px;
-                letter-spacing: 4px;
-                color: rgba(222,195,255,0.90);
-                text-shadow: 0 0 10px rgba(200,150,255,0.55), 0 1px 2px rgba(0,0,0,0.8);
-            }
-
-            /* ── Nintendo logo şeridi ── */
-            #gbcNintendoRow {
-                justify-content: center;
-                width: 58%;
-                padding: 4px 0;
-                margin: 6px 0 10px;
-                border: 1px solid rgba(255,255,255,0.13);
-                border-radius: 20px;
-                background: rgba(0,0,0,0.28);
-            }
-            .gbc-nintendo-text {
-                font-family: 'Georgia', 'Times New Roman', serif;
-                font-style: italic;
-                font-size: 12px;
-                color: rgba(215,195,255,0.65);
-                letter-spacing: 1px;
-            }
-
             /* ── Kontrol satırı: D-pad | SEL/STA | A/B ── */
             #gbcControls {
+                flex: 1;
                 width: 93%;
                 justify-content: space-between;
                 align-items: center;
-                padding: 4px 8px;
-                margin-bottom: 6px;
+                padding: 10px 8px 20px;
+                min-height: 220px;
             }
 
             /* D-pad kapsayıcı */
@@ -739,37 +745,35 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 8px;
+                gap: 14px;
             }
             .gbc-ss-btn {
-                background: linear-gradient(145deg, #2c2c3e 0%, #1c1c2c 100%);
-                border: 1px solid rgba(255,255,255,0.18);
-                color: rgba(200,178,255,0.72);
+                background: #141420;
+                border: 2px solid #2a2b3d;
+                color: #5de4ff;
                 font-family: 'PixelSix', monospace;
                 font-size: 6px;
                 letter-spacing: 1px;
-                padding: 5px 10px;
-                border-radius: 12px;
+                padding: 7px 10px;
+                border-radius: 8px;
                 cursor: pointer;
-                width: 58px;
+                width: 64px;
                 text-align: center;
-                box-shadow:
-                    0 3px 7px rgba(0,0,0,0.55),
-                    inset 0 1px 3px rgba(255,255,255,0.12);
+                box-shadow: 2px 2px 0 #000, inset 0 1px 0 rgba(255,255,255,0.10);
                 user-select: none;
                 touch-action: none;
                 pointer-events: all;
             }
             .gbc-ss-btn:active {
-                background: linear-gradient(145deg, #3c3c52, #2c2c40);
-                box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4);
+                box-shadow: 0 0 0 #000, inset 0 2px 3px rgba(0,0,0,0.6);
+                transform: translateY(1px);
             }
 
             /* A/B tuşları kapsayıcı (çapraz: B sol-alt, A sağ-üst) */
             #gbcABArea {
                 position: relative;
-                width: 115px;
-                height: 105px;
+                width: 150px;
+                height: 140px;
                 flex-shrink: 0;
             }
             #gbcBtnB {
@@ -915,49 +919,42 @@
         <div id="gameOverImg"></div>
     </div>
 
-    <!-- GBC Marka yazısı: GAME BOY COLOR (sadece mobil) -->
-    <div class="gbc-deco" id="gbcBrandRow">GAME BOY COLOR</div>
-
-    <!-- GBC Nintendo logo şeridi (sadece mobil) -->
-    <div class="gbc-deco" id="gbcNintendoRow">
-        <span class="gbc-nintendo-text">Nintendo</span>
-    </div>
-
     <!-- GBC Kontrol satırı: D-pad | SELECT/START | A/B (sadece mobil) -->
     <div class="gbc-deco" id="gbcControls">
 
         <!-- D-Pad (Sol) -->
         <div id="dpadContainer">
-            <svg id="dpadSvg" width="118" height="118" viewBox="0 0 118 118" xmlns="http://www.w3.org/2000/svg">
+            <svg id="dpadSvg" width="168" height="168" viewBox="0 0 118 118" xmlns="http://www.w3.org/2000/svg"
+                 style="image-rendering:pixelated">
                 <!-- D-pad dış yuvarlak zemin -->
-                <circle cx="59" cy="59" r="57" fill="#1a1a26" stroke="#2e2e3e" stroke-width="1.5"/>
-                <!-- Haç gövdesi -->
+                <circle cx="59" cy="59" r="57" fill="#141420" stroke="#2a2b3d" stroke-width="2"/>
+                <!-- Haç gövdesi (haç pixel sert köşeli) -->
                 <polygon points="41,6 77,6 77,41 112,41 112,77 77,77 77,112 41,112 41,77 6,77 6,41 41,41"
-                         fill="#252533" stroke="#353545" stroke-width="1.5" stroke-linejoin="round"/>
+                         fill="#1e1f2e" stroke="#2e2f42" stroke-width="1.5" stroke-linejoin="miter"/>
                 <!-- Orta kare -->
-                <rect x="41" y="41" width="36" height="36" fill="#2a2a3a"/>
+                <rect x="41" y="41" width="36" height="36" fill="#1a1b2c"/>
                 <!-- Orta nokta -->
-                <circle cx="59" cy="59" r="6" fill="#303040" stroke="#404050" stroke-width="1"/>
+                <circle cx="59" cy="59" r="5" fill="#2a2b40"/>
 
-                <!-- Yukarı kolu -->
+                <!-- Yukarı kolu (pixel: rx=0) -->
                 <g id="dpadUp" class="dpad-arm">
-                    <rect x="41" y="6" width="36" height="35" fill="#252533" rx="3"/>
-                    <polygon points="59,14 50,30 68,30" fill="#8888aa"/>
+                    <rect x="41" y="6" width="36" height="35" fill="#1e1f2e"/>
+                    <polygon points="59,13 49,29 69,29" fill="#5de4ff"/>
                 </g>
                 <!-- Aşağı kolu -->
                 <g id="dpadDown" class="dpad-arm">
-                    <rect x="41" y="77" width="36" height="35" fill="#252533" rx="3"/>
-                    <polygon points="59,104 50,88 68,88" fill="#8888aa"/>
+                    <rect x="41" y="77" width="36" height="35" fill="#1e1f2e"/>
+                    <polygon points="59,105 49,89 69,89" fill="#5de4ff"/>
                 </g>
                 <!-- Sol kolu -->
                 <g id="dpadLeft" class="dpad-arm">
-                    <rect x="6" y="41" width="35" height="36" fill="#252533" rx="3"/>
-                    <polygon points="14,59 30,50 30,68" fill="#8888aa"/>
+                    <rect x="6" y="41" width="35" height="36" fill="#1e1f2e"/>
+                    <polygon points="13,59 29,49 29,69" fill="#5de4ff"/>
                 </g>
                 <!-- Sağ kolu -->
                 <g id="dpadRight" class="dpad-arm">
-                    <rect x="77" y="41" width="35" height="36" fill="#252533" rx="3"/>
-                    <polygon points="104,59 88,50 88,68" fill="#8888aa"/>
+                    <rect x="77" y="41" width="35" height="36" fill="#1e1f2e"/>
+                    <polygon points="105,59 89,49 89,69" fill="#5de4ff"/>
                 </g>
             </svg>
         </div>
@@ -971,22 +968,24 @@
         <!-- A/B tuşları (çapraz yerleşim) -->
         <div id="gbcABArea">
             <!-- B tuşu: sol-alt -->
-            <svg id="gbcBtnB" width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="26" cy="26" r="24" fill="#1a1a2a" stroke="#333344" stroke-width="1.5"/>
-                <circle cx="26" cy="26" r="19" fill="#2a2a42"/>
-                <circle cx="26" cy="26" r="17" fill="#32325a"/>
-                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.10)"/>
-                <text x="26" y="32" text-anchor="middle" fill="#9090b8"
-                      font-family="PixelSix, monospace" font-size="15" font-weight="bold">B</text>
+            <svg id="gbcBtnB" width="68" height="68" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"
+                 style="image-rendering:pixelated">
+                <circle cx="26" cy="26" r="24" fill="#141420" stroke="#2a2b3d" stroke-width="2"/>
+                <circle cx="26" cy="26" r="19" fill="#1a1a42"/>
+                <circle cx="26" cy="26" r="17" fill="#2a2a6a"/>
+                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.12)"/>
+                <text x="26" y="32" text-anchor="middle" fill="#5de4ff"
+                      font-family="PixelSix, monospace" font-size="16" font-weight="bold">B</text>
             </svg>
             <!-- A tuşu: sağ-üst -->
-            <svg id="gbcBtnA" width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="26" cy="26" r="24" fill="#1a1a2a" stroke="#333344" stroke-width="1.5"/>
-                <circle cx="26" cy="26" r="19" fill="#2a2238"/>
-                <circle cx="26" cy="26" r="17" fill="#3a2858"/>
-                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.12)"/>
-                <text x="26" y="32" text-anchor="middle" fill="#b090d8"
-                      font-family="PixelSix, monospace" font-size="15" font-weight="bold">A</text>
+            <svg id="gbcBtnA" width="68" height="68" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"
+                 style="image-rendering:pixelated">
+                <circle cx="26" cy="26" r="24" fill="#141420" stroke="#2a2b3d" stroke-width="2"/>
+                <circle cx="26" cy="26" r="19" fill="#2a1a4a"/>
+                <circle cx="26" cy="26" r="17" fill="#3a2a6a"/>
+                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.14)"/>
+                <text x="26" y="32" text-anchor="middle" fill="#dd88ff"
+                      font-family="PixelSix, monospace" font-size="16" font-weight="bold">A</text>
             </svg>
         </div>
     </div>
