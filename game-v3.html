@@ -592,40 +592,237 @@
             image-rendering: pixelated;
         }
 
-        /* ===== MOBİL KONTROLLER ===== */
-        #mobileControls {
-            position: fixed;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 20px;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        #dpadContainer, #btnAContainer {
-            pointer-events: all;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-        }
-        #dpadSvg, #btnASvg {
-            display: block;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
-        }
-        .dpad-arm {
-            cursor: pointer;
-        }
-        .dpad-arm:active rect,
-        .dpad-arm:active polygon {
-            fill-opacity: 0.7;
+        /* ===== GAME BOY COLOR KABUK ===== */
+
+        /* Masaüstünde GBC süs elementleri gizli */
+        .gbc-deco { display: none !important; }
+
+        /* ── Mobil: GBC Kabuk (max 640px) ── */
+        @media (max-width: 640px) {
+            html, body {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .gbc-deco { display: flex !important; }
+
+            /* gameWrapper → GBC gövdesi */
+            #gameWrapper {
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                min-height: 100vh;
+                padding: 14px 0 22px;
+                /* Atomic Purple şeffaf gradient */
+                background:
+                    radial-gradient(ellipse at 22% 12%, rgba(220,180,255,0.55) 0%, transparent 42%),
+                    radial-gradient(ellipse at 78% 60%, rgba(80,35,185,0.50) 0%, transparent 52%),
+                    radial-gradient(ellipse at 50% 85%, rgba(50,15,120,0.6) 0%, transparent 55%),
+                    linear-gradient(168deg,
+                        rgba(148,100,238,0.97) 0%,
+                        rgba(118,72,208,0.96) 28%,
+                        rgba(88,48,178,0.97) 55%,
+                        rgba(62,28,148,0.99) 80%,
+                        rgba(44,16,112,1.00) 100%);
+                /* GBC gövde şekli: üst düz, alt yuvarlatılmış */
+                border-radius: 16px 16px 52% 52% / 10px 10px 42px 42px;
+                box-shadow:
+                    inset 0 4px 12px rgba(255,255,255,0.20),
+                    inset 2px 0 8px rgba(255,255,255,0.07),
+                    inset -2px 0 8px rgba(255,255,255,0.07),
+                    inset 0 -10px 30px rgba(0,0,0,0.40),
+                    0 10px 50px rgba(0,0,0,0.70);
+                position: relative;
+            }
+
+            /* Ekran çerçevesi: 500x500 konteyner mobilde küçültülünce
+               negatif margin ile boşluğu kapat */
+            #gameContainer {
+                border: 6px solid #0c0c0c !important;
+                border-radius: 10px;
+                box-shadow:
+                    0 0 0 5px #161616,
+                    0 0 0 9px #222222,
+                    0 0 0 11px #2e2e2e,
+                    inset 0 0 40px rgba(0,0,0,0.95),
+                    0 8px 25px rgba(0,0,0,0.85) !important;
+                /* Ölçek dönüşümünden kaynaklanan 500px DOM yüksekliği için telafi */
+                margin-top:    calc((var(--scale, 0.65) - 1) * 250px);
+                margin-bottom: calc((var(--scale, 0.65) - 1) * 250px);
+            }
+
+            /* ── Power LED satırı ── */
+            #gbcPowerRow {
+                width: 83%;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 5px;
+                margin-bottom: 7px;
+            }
+            #gbcPowerLed {
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background: radial-gradient(circle at 35% 35%, #ff5555, #cc0000);
+                box-shadow: 0 0 5px #ff2222, 0 0 12px rgba(255,0,0,0.55);
+                animation: gbcLedBlink 2.8s ease-in-out infinite;
+                flex-shrink: 0;
+            }
+            @keyframes gbcLedBlink {
+                0%, 100% { opacity: 1; box-shadow: 0 0 5px #ff2222, 0 0 12px rgba(255,0,0,0.55); }
+                50%       { opacity: 0.50; box-shadow: 0 0 3px #ff2222; }
+            }
+            .gbc-power-label {
+                font-size: 6px;
+                letter-spacing: 2px;
+                color: rgba(255,255,255,0.40);
+                font-family: 'PixelSix', monospace;
+            }
+
+            /* ── Marka yazısı: GAME BOY COLOR ── */
+            #gbcBrandRow {
+                justify-content: center;
+                width: 100%;
+                padding: 8px 0 7px;
+                background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(0,0,0,0.38) 18%,
+                    rgba(0,0,0,0.38) 82%,
+                    transparent 100%);
+                font-size: 10px;
+                letter-spacing: 4px;
+                color: rgba(222,195,255,0.90);
+                text-shadow: 0 0 10px rgba(200,150,255,0.55), 0 1px 2px rgba(0,0,0,0.8);
+            }
+
+            /* ── Nintendo logo şeridi ── */
+            #gbcNintendoRow {
+                justify-content: center;
+                width: 58%;
+                padding: 4px 0;
+                margin: 6px 0 10px;
+                border: 1px solid rgba(255,255,255,0.13);
+                border-radius: 20px;
+                background: rgba(0,0,0,0.28);
+            }
+            .gbc-nintendo-text {
+                font-family: 'Georgia', 'Times New Roman', serif;
+                font-style: italic;
+                font-size: 12px;
+                color: rgba(215,195,255,0.65);
+                letter-spacing: 1px;
+            }
+
+            /* ── Kontrol satırı: D-pad | SEL/STA | A/B ── */
+            #gbcControls {
+                width: 93%;
+                justify-content: space-between;
+                align-items: center;
+                padding: 4px 8px;
+                margin-bottom: 6px;
+            }
+
+            /* D-pad kapsayıcı */
+            #dpadContainer {
+                pointer-events: all;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+            }
+            .dpad-arm { cursor: pointer; }
+            .dpad-arm:active rect { fill: #3a3a4e !important; }
+            .dpad-arm:active polygon { fill: #bbbbcc !important; }
+
+            /* SELECT / START oval tuşlar */
+            #gbcSSArea {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            .gbc-ss-btn {
+                background: linear-gradient(145deg, #2c2c3e 0%, #1c1c2c 100%);
+                border: 1px solid rgba(255,255,255,0.18);
+                color: rgba(200,178,255,0.72);
+                font-family: 'PixelSix', monospace;
+                font-size: 6px;
+                letter-spacing: 1px;
+                padding: 5px 10px;
+                border-radius: 12px;
+                cursor: pointer;
+                width: 58px;
+                text-align: center;
+                box-shadow:
+                    0 3px 7px rgba(0,0,0,0.55),
+                    inset 0 1px 3px rgba(255,255,255,0.12);
+                user-select: none;
+                touch-action: none;
+                pointer-events: all;
+            }
+            .gbc-ss-btn:active {
+                background: linear-gradient(145deg, #3c3c52, #2c2c40);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4);
+            }
+
+            /* A/B tuşları kapsayıcı (çapraz: B sol-alt, A sağ-üst) */
+            #gbcABArea {
+                position: relative;
+                width: 115px;
+                height: 105px;
+                flex-shrink: 0;
+            }
+            #gbcBtnB {
+                position: absolute;
+                bottom: 0; left: 0;
+                pointer-events: all;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                cursor: pointer;
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
+            }
+            #gbcBtnA {
+                position: absolute;
+                top: 0; right: 0;
+                pointer-events: all;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: none;
+                cursor: pointer;
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
+            }
+
+            /* ── Hoparlör grili ── */
+            #gbcSpeaker {
+                width: 55%;
+                justify-content: flex-end;
+                align-self: flex-end;
+                padding-right: 22px;
+                gap: 5px;
+                flex-wrap: wrap;
+                max-width: 130px;
+                margin-bottom: 4px;
+            }
+            .gbc-speaker-hole {
+                width: 6px; height: 6px;
+                border-radius: 50%;
+                background: rgba(0,0,0,0.55);
+                border: 1px solid rgba(0,0,0,0.75);
+                box-shadow: inset 0 1px 2px rgba(0,0,0,0.9);
+            }
         }
     </style>
 </head>
 <body>
 <div id="gameWrapper">
+
+    <!-- GBC Power LED satırı (sadece mobil) -->
+    <div class="gbc-deco" id="gbcPowerRow">
+        <span id="gbcPowerLed"></span>
+        <span class="gbc-power-label">POWER</span>
+    </div>
+
     <div id="gameContainer">
        
         <div id="bootScreen" class="active">
@@ -717,63 +914,99 @@
        
         <div id="gameOverImg"></div>
     </div>
-</div>
 
-<!-- ===== MOBİL KONTROLLER ===== -->
-<div id="mobileControls">
-    <!-- D-Pad (Sol) -->
-    <div id="dpadContainer">
-        <svg id="dpadSvg" width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
-            <!-- D-pad gövdesi (haç şekli) -->
-            <polygon points="45,5 85,5 85,45 125,45 125,85 85,85 85,125 45,125 45,85 5,85 5,45 45,45"
-                     fill="#1e1e1e" stroke="#444" stroke-width="2"/>
-            <!-- İç çizgi detay -->
-            <polygon points="45,5 85,5 85,45 125,45 125,85 85,85 85,125 45,125 45,85 5,85 5,45 45,45"
-                     fill="none" stroke="#555" stroke-width="1" stroke-dasharray="none"/>
-            <!-- Orta kısım -->
-            <rect x="45" y="45" width="40" height="40" fill="#2a2a2a"/>
-            <!-- Orta nokta (dekoratif) -->
-            <circle cx="65" cy="65" r="5" fill="#3a3a3a"/>
+    <!-- GBC Marka yazısı: GAME BOY COLOR (sadece mobil) -->
+    <div class="gbc-deco" id="gbcBrandRow">GAME BOY COLOR</div>
 
-            <!-- Yukarı tıklanabilir alan + ok -->
-            <g id="dpadUp" class="dpad-arm">
-                <rect x="45" y="5" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
-                <polygon points="65,15 55,32 75,32" fill="#aaaaaa"/>
-            </g>
-            <!-- Aşağı tıklanabilir alan + ok -->
-            <g id="dpadDown" class="dpad-arm">
-                <rect x="45" y="85" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
-                <polygon points="65,115 55,98 75,98" fill="#aaaaaa"/>
-            </g>
-            <!-- Sol tıklanabilir alan + ok -->
-            <g id="dpadLeft" class="dpad-arm">
-                <rect x="5" y="45" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
-                <polygon points="15,65 32,55 32,75" fill="#aaaaaa"/>
-            </g>
-            <!-- Sağ tıklanabilir alan + ok -->
-            <g id="dpadRight" class="dpad-arm">
-                <rect x="85" y="45" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
-                <polygon points="115,65 98,55 98,75" fill="#aaaaaa"/>
-            </g>
-        </svg>
+    <!-- GBC Nintendo logo şeridi (sadece mobil) -->
+    <div class="gbc-deco" id="gbcNintendoRow">
+        <span class="gbc-nintendo-text">Nintendo</span>
     </div>
 
-    <!-- A Tuşu (Sağ) -->
-    <div id="btnAContainer">
-        <svg id="btnASvg" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-            <!-- Dış halka -->
-            <circle cx="40" cy="40" r="37" fill="#1a1a1a" stroke="#444" stroke-width="2"/>
-            <!-- Buton yüzü -->
-            <circle cx="40" cy="40" r="30" fill="#8b0000"/>
-            <!-- Highlight efekti -->
-            <ellipse cx="32" cy="28" rx="12" ry="7" fill="rgba(255,255,255,0.12)"/>
-            <!-- Alt gölge -->
-            <ellipse cx="40" cy="52" rx="18" ry="8" fill="rgba(0,0,0,0.25)"/>
-            <!-- A yazısı -->
-            <text x="40" y="50" text-anchor="middle" fill="#ffffff"
-                  font-family="PixelSix, monospace" font-size="24" font-weight="bold">A</text>
-        </svg>
+    <!-- GBC Kontrol satırı: D-pad | SELECT/START | A/B (sadece mobil) -->
+    <div class="gbc-deco" id="gbcControls">
+
+        <!-- D-Pad (Sol) -->
+        <div id="dpadContainer">
+            <svg id="dpadSvg" width="118" height="118" viewBox="0 0 118 118" xmlns="http://www.w3.org/2000/svg">
+                <!-- D-pad dış yuvarlak zemin -->
+                <circle cx="59" cy="59" r="57" fill="#1a1a26" stroke="#2e2e3e" stroke-width="1.5"/>
+                <!-- Haç gövdesi -->
+                <polygon points="41,6 77,6 77,41 112,41 112,77 77,77 77,112 41,112 41,77 6,77 6,41 41,41"
+                         fill="#252533" stroke="#353545" stroke-width="1.5" stroke-linejoin="round"/>
+                <!-- Orta kare -->
+                <rect x="41" y="41" width="36" height="36" fill="#2a2a3a"/>
+                <!-- Orta nokta -->
+                <circle cx="59" cy="59" r="6" fill="#303040" stroke="#404050" stroke-width="1"/>
+
+                <!-- Yukarı kolu -->
+                <g id="dpadUp" class="dpad-arm">
+                    <rect x="41" y="6" width="36" height="35" fill="#252533" rx="3"/>
+                    <polygon points="59,14 50,30 68,30" fill="#8888aa"/>
+                </g>
+                <!-- Aşağı kolu -->
+                <g id="dpadDown" class="dpad-arm">
+                    <rect x="41" y="77" width="36" height="35" fill="#252533" rx="3"/>
+                    <polygon points="59,104 50,88 68,88" fill="#8888aa"/>
+                </g>
+                <!-- Sol kolu -->
+                <g id="dpadLeft" class="dpad-arm">
+                    <rect x="6" y="41" width="35" height="36" fill="#252533" rx="3"/>
+                    <polygon points="14,59 30,50 30,68" fill="#8888aa"/>
+                </g>
+                <!-- Sağ kolu -->
+                <g id="dpadRight" class="dpad-arm">
+                    <rect x="77" y="41" width="35" height="36" fill="#252533" rx="3"/>
+                    <polygon points="104,59 88,50 88,68" fill="#8888aa"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- SELECT / START -->
+        <div id="gbcSSArea">
+            <div class="gbc-ss-btn" id="gbcSelectBtn">SELECT</div>
+            <div class="gbc-ss-btn" id="gbcStartBtn">START</div>
+        </div>
+
+        <!-- A/B tuşları (çapraz yerleşim) -->
+        <div id="gbcABArea">
+            <!-- B tuşu: sol-alt -->
+            <svg id="gbcBtnB" width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="26" cy="26" r="24" fill="#1a1a2a" stroke="#333344" stroke-width="1.5"/>
+                <circle cx="26" cy="26" r="19" fill="#2a2a42"/>
+                <circle cx="26" cy="26" r="17" fill="#32325a"/>
+                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.10)"/>
+                <text x="26" y="32" text-anchor="middle" fill="#9090b8"
+                      font-family="PixelSix, monospace" font-size="15" font-weight="bold">B</text>
+            </svg>
+            <!-- A tuşu: sağ-üst -->
+            <svg id="gbcBtnA" width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="26" cy="26" r="24" fill="#1a1a2a" stroke="#333344" stroke-width="1.5"/>
+                <circle cx="26" cy="26" r="19" fill="#2a2238"/>
+                <circle cx="26" cy="26" r="17" fill="#3a2858"/>
+                <ellipse cx="20" cy="19" rx="8" ry="5" fill="rgba(255,255,255,0.12)"/>
+                <text x="26" y="32" text-anchor="middle" fill="#b090d8"
+                      font-family="PixelSix, monospace" font-size="15" font-weight="bold">A</text>
+            </svg>
+        </div>
     </div>
+
+    <!-- GBC Hoparlör grili (sadece mobil) -->
+    <div class="gbc-deco" id="gbcSpeaker">
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+        <span class="gbc-speaker-hole"></span>
+    </div>
+
 </div>
 
 <script>
@@ -781,17 +1014,18 @@
     // Ekran boyutunu hesapla ve oyunu ölçeklendir
     function setupScaling() {
         const gameContainer = document.getElementById('gameContainer');
-        // Pencere boyutlarını al
         const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-       
-        // 500x500 container boyutuna göre ölçek faktörünü hesapla
-        const scaleX = vw / 500;
-        const scaleY = vh / 500;
-        // En küçük ölçeği seç (oyunun pencerede tam sığmasını sağlar)
-        const scale = Math.min(scaleX, scaleY);
-       
-        // Ölçeği CSS değişkeni olarak uygula
+
+        let scale;
+        if (vw <= 640) {
+            // Mobil: GBC ekran alanı = viewport genişliğinin %80'i
+            scale = (vw * 0.80) / 500;
+        } else {
+            const scaleX = vw / 500;
+            const scaleY = vh / 500;
+            scale = Math.min(scaleX, scaleY);
+        }
         gameContainer.style.setProperty('--scale', scale);
     }
    
@@ -2095,17 +2329,25 @@ function showSwitchPokemonMenu() {
         bindDpad('dpadLeft',  'ArrowLeft');
         bindDpad('dpadRight', 'ArrowRight');
 
-        var btnA = document.getElementById('btnAContainer');
-        if (btnA) {
-            btnA.addEventListener('touchstart', function(e) {
+        // A tuşu, B tuşu ve START → Enter gibi davranır
+        ['gbcBtnA', 'gbcBtnB', 'gbcStartBtn'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 simulateKey('Enter');
             }, { passive: false });
-            btnA.addEventListener('mousedown', function(e) {
+            el.addEventListener('mousedown', function(e) {
                 e.preventDefault();
                 simulateKey('Enter');
             });
+        });
+
+        // SELECT → dekoratif (oyunda karşılığı yok)
+        var selBtn = document.getElementById('gbcSelectBtn');
+        if (selBtn) {
+            selBtn.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
         }
     })();
 
