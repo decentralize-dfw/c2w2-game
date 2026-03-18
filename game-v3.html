@@ -591,6 +591,37 @@
             object-fit: contain;
             image-rendering: pixelated;
         }
+
+        /* ===== MOBİL KONTROLLER ===== */
+        #mobileControls {
+            position: fixed;
+            bottom: 16px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        #dpadContainer, #btnAContainer {
+            pointer-events: all;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        #dpadSvg, #btnASvg {
+            display: block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9));
+        }
+        .dpad-arm {
+            cursor: pointer;
+        }
+        .dpad-arm:active rect,
+        .dpad-arm:active polygon {
+            fill-opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -687,6 +718,64 @@
         <div id="gameOverImg"></div>
     </div>
 </div>
+
+<!-- ===== MOBİL KONTROLLER ===== -->
+<div id="mobileControls">
+    <!-- D-Pad (Sol) -->
+    <div id="dpadContainer">
+        <svg id="dpadSvg" width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+            <!-- D-pad gövdesi (haç şekli) -->
+            <polygon points="45,5 85,5 85,45 125,45 125,85 85,85 85,125 45,125 45,85 5,85 5,45 45,45"
+                     fill="#1e1e1e" stroke="#444" stroke-width="2"/>
+            <!-- İç çizgi detay -->
+            <polygon points="45,5 85,5 85,45 125,45 125,85 85,85 85,125 45,125 45,85 5,85 5,45 45,45"
+                     fill="none" stroke="#555" stroke-width="1" stroke-dasharray="none"/>
+            <!-- Orta kısım -->
+            <rect x="45" y="45" width="40" height="40" fill="#2a2a2a"/>
+            <!-- Orta nokta (dekoratif) -->
+            <circle cx="65" cy="65" r="5" fill="#3a3a3a"/>
+
+            <!-- Yukarı tıklanabilir alan + ok -->
+            <g id="dpadUp" class="dpad-arm">
+                <rect x="45" y="5" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
+                <polygon points="65,15 55,32 75,32" fill="#aaaaaa"/>
+            </g>
+            <!-- Aşağı tıklanabilir alan + ok -->
+            <g id="dpadDown" class="dpad-arm">
+                <rect x="45" y="85" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
+                <polygon points="65,115 55,98 75,98" fill="#aaaaaa"/>
+            </g>
+            <!-- Sol tıklanabilir alan + ok -->
+            <g id="dpadLeft" class="dpad-arm">
+                <rect x="5" y="45" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
+                <polygon points="15,65 32,55 32,75" fill="#aaaaaa"/>
+            </g>
+            <!-- Sağ tıklanabilir alan + ok -->
+            <g id="dpadRight" class="dpad-arm">
+                <rect x="85" y="45" width="40" height="40" fill="#2c2c2c" stroke="#333" stroke-width="0.5"/>
+                <polygon points="115,65 98,55 98,75" fill="#aaaaaa"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- A Tuşu (Sağ) -->
+    <div id="btnAContainer">
+        <svg id="btnASvg" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <!-- Dış halka -->
+            <circle cx="40" cy="40" r="37" fill="#1a1a1a" stroke="#444" stroke-width="2"/>
+            <!-- Buton yüzü -->
+            <circle cx="40" cy="40" r="30" fill="#8b0000"/>
+            <!-- Highlight efekti -->
+            <ellipse cx="32" cy="28" rx="12" ry="7" fill="rgba(255,255,255,0.12)"/>
+            <!-- Alt gölge -->
+            <ellipse cx="40" cy="52" rx="18" ry="8" fill="rgba(0,0,0,0.25)"/>
+            <!-- A yazısı -->
+            <text x="40" y="50" text-anchor="middle" fill="#ffffff"
+                  font-family="PixelSix, monospace" font-size="24" font-weight="bold">A</text>
+        </svg>
+    </div>
+</div>
+
 <script>
     // ===== SETUP SCALING =====
     // Ekran boyutunu hesapla ve oyunu ölçeklendir
@@ -1957,6 +2046,69 @@ function showSwitchPokemonMenu() {
             handleBattleMenuInput(e);
         }
     });
+    // ===== MOBİL KONTROLLER =====
+    function simulateKey(key) {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: key, bubbles: true }));
+    }
+
+    (function setupMobileControls() {
+        var repeatTimer = null;
+
+        function startRepeat(key) {
+            simulateKey(key);
+            repeatTimer = setInterval(function() { simulateKey(key); }, 150);
+        }
+
+        function stopRepeat() {
+            if (repeatTimer) {
+                clearInterval(repeatTimer);
+                repeatTimer = null;
+            }
+        }
+
+        function bindDpad(id, key) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                startRepeat(key);
+            }, { passive: false });
+            el.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                stopRepeat();
+            }, { passive: false });
+            el.addEventListener('touchcancel', function(e) {
+                e.preventDefault();
+                stopRepeat();
+            }, { passive: false });
+            el.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                startRepeat(key);
+            });
+            el.addEventListener('mouseup', stopRepeat);
+            el.addEventListener('mouseleave', stopRepeat);
+        }
+
+        bindDpad('dpadUp',    'ArrowUp');
+        bindDpad('dpadDown',  'ArrowDown');
+        bindDpad('dpadLeft',  'ArrowLeft');
+        bindDpad('dpadRight', 'ArrowRight');
+
+        var btnA = document.getElementById('btnAContainer');
+        if (btnA) {
+            btnA.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                simulateKey('Enter');
+            }, { passive: false });
+            btnA.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                simulateKey('Enter');
+            });
+        }
+    })();
+
     // ===== INIT BLOKU (En sonda) =====
     // Small delay for preloading images
     window.onload = function() {
